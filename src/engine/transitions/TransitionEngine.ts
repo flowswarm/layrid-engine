@@ -36,6 +36,9 @@ export class TransitionEngine {
         });
     }
 
+    // CODEX §Rule 8 EXEMPT: This RAF is a self-terminating Promise-based animation,
+    // not a persistent loop. It writes progress directly to MotionEngine and resolves
+    // when the transition duration completes. It does not compete with MasterRAFLoop.
     private animateProgress(start: number, end: number, duration: number): Promise<void> {
         return new Promise(resolve => {
             const startTime = performance.now();

@@ -3,10 +3,9 @@ import { RuntimeAssetResolver } from '../../../pipeline/preview/RuntimeAssetReso
 import { SiteDeploymentSync } from '../../../pipeline/deployment/SiteDeploymentSync';
 import { ScrollController } from '../scroll/ScrollController';
 import { ScrollTimelineController } from '../scroll/ScrollTimelineController';
-import { MasterRAFLoop } from '../core/MasterRAFLoop';
-import { ViewportDetector } from '../core/ViewportDetector';
+import { MasterRAFLoop } from './MasterRAFLoop';
+import { ViewportController } from './ViewportController';
 import { WebGLSceneManager } from '../webgl/WebGLSceneManager';
-import { TypographyMotion } from '../typography/TypographyMotion';
 import { HeroAnchorFollower } from '../typography/HeroAnchorFollower';
 
 /**
@@ -15,21 +14,20 @@ import { HeroAnchorFollower } from '../typography/HeroAnchorFollower';
  * The single orchestrator that wires the entire Layrid runtime.
  * Called once on page load. Connects:
  *   RuntimeAssetResolver → MotionEngine.context
- *   ViewportDetector → MotionEngine.viewport
+ *   ViewportController → MotionEngine.viewport
  *   ScrollController → MotionEngine.spatial
  *   WebGLSceneManager → MotionEngine.topology (anchor publisher)
- *   TypographyMotion / HeroAnchorFollower → MotionEngine subscribers
+ *   HeroAnchorFollower → MotionEngine subscriber (DOM anchor follow)
  * 
  * Preview/comparison/live all use the same initialization path — 
  * only the resolved context values differ.
  */
 export class RuntimeBootstrap {
     private masterLoop: MasterRAFLoop | null = null;
-    private viewportDetector: ViewportDetector | null = null;
+    private viewportController: ViewportController | null = null;
     private scrollController: ScrollController | null = null;
     private scrollTimeline: ScrollTimelineController | null = null;
     private webglManager: WebGLSceneManager | null = null;
-    private typographyMotion: TypographyMotion | null = null;
     private heroFollower: HeroAnchorFollower | null = null;
 
     /**
@@ -49,7 +47,6 @@ export class RuntimeBootstrap {
         console.log('[RuntimeBootstrap] 🚀 Initializing Layrid runtime...');
 
         // ─── STEP 1: Resolve asset context ───────────────────────────
-        // Parse URL query parameters for preview/comparison tokens
         const queryParams = Object.fromEntries(new URLSearchParams(window.location.search));
 
         // Get the current live asset from the deployment table
@@ -60,7 +57,7 @@ export class RuntimeBootstrap {
         // RuntimeAssetResolver determines mode based on URL params
         const resolved = await RuntimeAssetResolver.resolve(queryParams, currentLiveHash);
 
-        console.log(`[RuntimeBootstrap] Resolved context: mode=${resolved.mode}, assets=[${resolved.assetIds.join(', ')}]`);
+        console.log(`[RuntimeBootstrap] Resolved context: mode=${resolved.mode}, assets=[${resolved.assetIds.join(', ')}], env=${resolved.environment}`);
 
         // ─── STEP 2: Write context into MotionEngine ─────────────────
         MotionEngine.write({
@@ -78,9 +75,9 @@ export class RuntimeBootstrap {
         });
 
         // ─── STEP 3: Initialize producers ────────────────────────────
-        // Viewport detector — publishes viewport dimensions + degradedMode
-        this.viewportDetector = new ViewportDetector();
-        this.viewportDetector.initialize();
+        // Viewport controller — publishes viewport dimensions + degradedMode
+        this.viewportController = new ViewportController();
+        this.viewportController.initialize();
 
         // Scroll controller — publishes spatial progress/velocity/direction
         this.scrollController = new ScrollController();
@@ -91,14 +88,14 @@ export class RuntimeBootstrap {
         this.scrollTimeline.registerSection('hero-primary', 'heroIntro');
 
         // ─── STEP 4: Initialize WebGL subscriber ─────────────────────
-        // WebGLSceneManager auto-subscribes to MotionEngine in its constructor
+        // WebGLSceneManager auto-subscribes to MotionEngine in its constructor.
+        // It reads context.assetIds and loads centerpiece(s) via GeneratedLogoCenterpiece.
+        // If no GLB exists, a procedural demo mesh is created automatically.
         this.webglManager = new WebGLSceneManager(canvas);
 
-        // ─── STEP 5: Initialize DOM subscribers ──────────────────────
-        this.typographyMotion = new TypographyMotion();
-        this.typographyMotion.initialize();
-
-        // Hero anchor follower — dedicated premium DOM component
+        // ─── STEP 5: Initialize DOM anchor follower ──────────────────
+        // HeroAnchorFollower reads MotionEngine.topology.anchors.headerFollow
+        // and applies lerp-smoothed CSS translate3d to the hero text element.
         if (heroTextElement) {
             this.heroFollower = new HeroAnchorFollower(heroTextElement);
             this.heroFollower.initialize();
@@ -117,10 +114,9 @@ export class RuntimeBootstrap {
     public dispose(): void {
         this.masterLoop?.dispose();
         this.heroFollower?.dispose();
-        this.typographyMotion?.dispose();
         this.webglManager?.dispose();
         this.scrollController?.dispose();
-        this.viewportDetector?.dispose();
+        this.viewportController?.dispose();
 
         console.log('[RuntimeBootstrap] 🛑 Runtime disposed');
     }

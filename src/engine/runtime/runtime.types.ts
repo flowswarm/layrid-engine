@@ -9,7 +9,7 @@
 export interface SharedRuntimeState {
     context: {
         siteId: string
-        sceneRole: 'hero-centerpiece' | 'ambient'
+        sceneRole: 'hero-centerpiece'
         assetIds: string[]
         environment: 'live' | 'preview' | 'comparison'
         mode: 'live' | 'preview' | 'comparison'

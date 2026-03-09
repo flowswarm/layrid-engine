@@ -70,6 +70,6 @@ export class ScrollController {
     }
 
     public dispose() {
-        window.removeEventListener('resize', this.calculateBounds.bind(this));
+        window.removeEventListener('resize', this.boundCalculateBounds);
     }
 }
