@@ -31,3 +31,25 @@ export const JsonStore = {
         }
     }
 };
+
+/**
+ * A Map that auto-persists to disk via JsonStore on every mutation.
+ * Replaces the fragile monkey-patching of Map.prototype.set.
+ */
+export class PersistentMap<K extends string, V> extends Map<K, V> {
+    constructor(private persistKey: string, init?: Record<string, V>) {
+        super(init ? Object.entries(init) as [K, V][] : []);
+    }
+
+    set(k: K, v: V): this {
+        super.set(k, v);
+        JsonStore.save(this.persistKey, Object.fromEntries(this));
+        return this;
+    }
+
+    delete(k: K): boolean {
+        const result = super.delete(k);
+        if (result) JsonStore.save(this.persistKey, Object.fromEntries(this));
+        return result;
+    }
+}

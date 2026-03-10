@@ -3,7 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
 
-import { JsonStore } from './persistence/JsonStore';
+import { JsonStore, PersistentMap } from './persistence/JsonStore';
 import { AssetRegistry } from '../pipeline/registry/AssetRegistry';
 import { SiteDeploymentSync } from '../pipeline/deployment/SiteDeploymentSync';
 import { ApprovalWorkflowEngine } from '../pipeline/workflow/ApprovalWorkflowEngine';
@@ -33,22 +33,9 @@ async function startServer() {
         : new ApprovalWorkflowEngine(registry, deploymentSync);
     workflowEngine.setPersist((data) => JsonStore.save('workflows', data));
 
-    // Restore assetId → workflowId mapping
-    const workflowMap = new Map<string, string>();
+    // Restore assetId → workflowId mapping (auto-persists on set/delete)
     const savedMap = JsonStore.load<Record<string, string>>('workflow-map');
-    if (savedMap) {
-        for (const [k, v] of Object.entries(savedMap)) workflowMap.set(k, v);
-    }
-
-    // Persist workflow map whenever it changes (we'll wrap the set)
-    const origSet = workflowMap.set.bind(workflowMap);
-    workflowMap.set = function (k: string, v: string) {
-        const result = origSet(k, v);
-        const obj: Record<string, string> = {};
-        for (const [key, val] of workflowMap) obj[key] = val;
-        JsonStore.save('workflow-map', obj);
-        return result;
-    };
+    const workflowMap = new PersistentMap<string, string>('workflow-map', savedMap ?? undefined);
 
     // ── 2. Create job runner (server-side only) ───────────────
     const jobRunner = new LogoAssetJobRunner(registry);
@@ -56,7 +43,7 @@ async function startServer() {
     console.log('[Server] ✅ Pipeline services restored from disk');
 
     // ── 3. Mount API routes ──────────────────────────────────
-    app.use('/api/logo-jobs', createLogoJobsRouter(registry, jobRunner, workflowEngine));
+    app.use('/api/logo-jobs', createLogoJobsRouter(registry, jobRunner, workflowEngine, workflowMap));
     app.use('/api', createPublishRouter(registry, deploymentSync, workflowEngine, workflowMap));
 
     // ── 4. Serve static files from public/ (where GLBs live) ─

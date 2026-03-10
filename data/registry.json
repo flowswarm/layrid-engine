@@ -1,6 +1,6 @@
 {
   "manifestVersion": 2,
-  "lastSynchronizedAt": "2026-03-10T04:31:46.206Z",
+  "lastSynchronizedAt": "2026-03-10T06:36:00.601Z",
   "assetsRecords": {
     "89c95f81-69d5-4e27-aef3-834d8be2d8a0": {
       "sourceType": "text",
@@ -77,6 +77,63 @@
       "updatedAt": "2026-03-10T04:31:46.206Z",
       "runtimePath": "/models/layrid-1773117106194.glb",
       "exportFilename": "layrid-1773117106194.glb"
+    },
+    "413f59de-fc0e-4d0e-be16-69289c855110": {
+      "sourceType": "svg",
+      "materialPreset": "chrome",
+      "compatibleSceneModes": [
+        "logo-centerpiece"
+      ],
+      "isHeroEligible": true,
+      "supportsMotionAnchors": true,
+      "sourceJobId": "8c3d3e3c-0775-4d5e-bf3d-dbc891e4bce6",
+      "sceneRole": "hero-centerpiece",
+      "assetId": "413f59de-fc0e-4d0e-be16-69289c855110",
+      "assetFamilyId": "6491a95c-2c93-4d70-9915-48af23469f5f",
+      "clientId": "studio-site",
+      "status": "pending_approval",
+      "createdAt": "2026-03-10T06:28:02.955Z",
+      "updatedAt": "2026-03-10T06:28:03.050Z",
+      "runtimePath": "/models/layrid-1773124082900.glb",
+      "exportFilename": "layrid-1773124082900.glb"
+    },
+    "6078f465-f97d-47ff-ba44-81c357d485bd": {
+      "sourceType": "svg",
+      "materialPreset": "chrome",
+      "compatibleSceneModes": [
+        "logo-centerpiece"
+      ],
+      "isHeroEligible": true,
+      "supportsMotionAnchors": true,
+      "sourceJobId": "08bf845c-f169-427f-a953-ec84fa71be94",
+      "sceneRole": "hero-centerpiece",
+      "assetId": "6078f465-f97d-47ff-ba44-81c357d485bd",
+      "assetFamilyId": "3b8c1f70-e2c6-4a36-b6cb-1cf45c398eae",
+      "clientId": "studio-site",
+      "status": "pending_approval",
+      "createdAt": "2026-03-10T06:28:48.995Z",
+      "updatedAt": "2026-03-10T06:28:49.004Z",
+      "runtimePath": "/models/newtest-1773124128966.glb",
+      "exportFilename": "newtest-1773124128966.glb"
+    },
+    "ae603e89-5964-4082-a83f-49b29f991f74": {
+      "sourceType": "svg",
+      "materialPreset": "glass",
+      "compatibleSceneModes": [
+        "logo-centerpiece"
+      ],
+      "isHeroEligible": true,
+      "supportsMotionAnchors": true,
+      "sourceJobId": "e0a0593d-6d8b-4afd-8e1c-ea25398aff17",
+      "sceneRole": "hero-centerpiece",
+      "assetId": "ae603e89-5964-4082-a83f-49b29f991f74",
+      "assetFamilyId": "62bd8736-3c05-49c1-9fcc-c6eac0105e76",
+      "clientId": "studio-site",
+      "status": "pending_approval",
+      "createdAt": "2026-03-10T06:36:00.569Z",
+      "updatedAt": "2026-03-10T06:36:00.601Z",
+      "runtimePath": "/models/new test-1773124560491.glb",
+      "exportFilename": "new test-1773124560491.glb"
     }
   },
   "families": {
@@ -96,6 +153,21 @@
       "variantAssetIds": []
     },
     "5fb3d61b-036b-4c7f-9c41-274d15df6823": {
+      "clientId": "studio-site",
+      "primaryAssetId": null,
+      "variantAssetIds": []
+    },
+    "6491a95c-2c93-4d70-9915-48af23469f5f": {
+      "clientId": "studio-site",
+      "primaryAssetId": null,
+      "variantAssetIds": []
+    },
+    "3b8c1f70-e2c6-4a36-b6cb-1cf45c398eae": {
+      "clientId": "studio-site",
+      "primaryAssetId": null,
+      "variantAssetIds": []
+    },
+    "62bd8736-3c05-49c1-9fcc-c6eac0105e76": {
       "clientId": "studio-site",
       "primaryAssetId": null,
       "variantAssetIds": []

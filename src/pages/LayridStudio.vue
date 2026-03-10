@@ -312,6 +312,7 @@ const genForm = reactive({
   bevel: 0.03,
 });
 const svgFileName = ref('');
+const svgFile = ref<File | null>(null);
 const fileInputRef = ref<HTMLInputElement | null>(null);
 const isGenerating = ref(false);
 
@@ -367,13 +368,16 @@ function handleFileSelect(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0];
   if (file) {
     svgFileName.value = file.name;
-    genForm.sourcePayload = file.name;
+    svgFile.value = file;
   }
 }
 
 // ─── Actions ────────────────────────────────────────────
 async function generateAsset() {
-  if (!genForm.brandName || !genForm.sourcePayload) return;
+  // For text mode, sourcePayload comes from the form; for SVG mode, the file is required
+  if (!genForm.brandName) return;
+  if (genForm.sourceType === 'text' && !genForm.sourcePayload) return;
+  if (genForm.sourceType === 'svg' && !svgFile.value) return;
   isGenerating.value = true;
   const familyId = uuidv4();
 
@@ -381,15 +385,21 @@ async function generateAsset() {
     log(`⏳ Submitting generation job...`);
 
     // 1. Submit job to real backend
-    const result = await PlatformServices.requestLogo(siteId, familyId, {
-      inputType: genForm.sourceType,
-      materialPreset: genForm.materialPreset,
-      sourcePayload: genForm.sourcePayload,
-      extrusionDepth: genForm.depth,
-      bevelDepth: genForm.bevel,
-      brandColorHex: genForm.brandColor,
-      targetFilename: `${genForm.brandName.toLowerCase()}-${Date.now()}`
-    });
+    const result = await PlatformServices.requestLogo(
+      siteId,
+      familyId,
+      {
+        inputType: genForm.sourceType,
+        materialPreset: genForm.materialPreset,
+        sourcePayload: genForm.sourceType === 'text' ? genForm.sourcePayload : (svgFile.value?.name || ''),
+        extrusionDepth: genForm.depth,
+        bevelDepth: genForm.bevel,
+        brandColorHex: genForm.brandColor,
+        targetFilename: `${genForm.brandName.toLowerCase()}-${Date.now()}`
+      },
+      'hero-centerpiece',
+      genForm.sourceType === 'svg' ? svgFile.value ?? undefined : undefined
+    );
 
     log(`📋 Job queued: ${shortId(result.jobId)}`);
 

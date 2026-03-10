@@ -17,20 +17,40 @@ export const PlatformServices = {
     // ──────────────────────────────────────────────
 
     /**
-     * Step 1: Request a new logo generation via the backend.
-     * POST /api/logo-jobs → server-side LogoJobRunner
-     */
+ * Step 1: Request a new logo generation via the backend.
+ * POST /api/logo-jobs → server-side LogoJobRunner
+ *
+ * When an SVG File is provided, the request is sent as multipart/form-data
+ * so the actual file bytes reach the server. For text-only jobs the
+ * existing JSON path is preserved.
+ */
     async requestLogo(
         siteId: string,
         familyId: string,
         request: { inputType: string; materialPreset: string; targetFilename: string;[key: string]: any },
-        sceneRole: string = 'hero-centerpiece'
+        sceneRole: string = 'hero-centerpiece',
+        svgFile?: File
     ): Promise<{ jobId: string; draftAssetId: string; workflowId: string; familyId: string }> {
-        const response = await fetch('/api/logo-jobs', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ siteId, familyId, request, sceneRole })
-        });
+        let response: Response;
+
+        if (svgFile) {
+            // Multipart upload — server parses `request` from the JSON string field
+            const form = new FormData();
+            form.append('siteId', siteId);
+            form.append('familyId', familyId);
+            form.append('sceneRole', sceneRole);
+            form.append('request', JSON.stringify(request));
+            form.append('svgFile', svgFile);
+            response = await fetch('/api/logo-jobs', { method: 'POST', body: form });
+        } else {
+            // Standard JSON body (text-mode jobs)
+            response = await fetch('/api/logo-jobs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ siteId, familyId, request, sceneRole })
+            });
+        }
+
         if (!response.ok) throw new Error(`Job creation failed: ${response.statusText}`);
         return response.json();
     },

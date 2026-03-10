@@ -85,8 +85,8 @@ export class ApprovalWorkflowEngine {
     ): void {
         const flow = this.workflowDB.get(workflowId);
         if (!flow) throw new Error(`Workflow not found.`);
-        if (flow.state !== 'approved' && flow.state !== 'archived') {
-            throw new Error(`Asset must be 'approved' to publish.`);
+        if (flow.state !== 'approved') {
+            throw new Error(`Asset must be in 'approved' state to publish. Current: ${flow.state}`);
         }
 
         this.demoteCompetingLiveAssets(flow.clientId, flow.targetSceneRole, environment);

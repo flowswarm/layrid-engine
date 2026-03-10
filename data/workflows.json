@@ -30,5 +30,29 @@
     "clientId": "studio-site",
     "targetSceneRole": "hero-centerpiece",
     "state": "draft"
+  },
+  "66ad0a6a-bf25-4100-afc2-f6474a5d665f": {
+    "workflowId": "66ad0a6a-bf25-4100-afc2-f6474a5d665f",
+    "assetId": "413f59de-fc0e-4d0e-be16-69289c855110",
+    "familyId": "6491a95c-2c93-4d70-9915-48af23469f5f",
+    "clientId": "studio-site",
+    "targetSceneRole": "hero-centerpiece",
+    "state": "draft"
+  },
+  "73699377-5cfe-4594-9dd8-98ad71bddb84": {
+    "workflowId": "73699377-5cfe-4594-9dd8-98ad71bddb84",
+    "assetId": "6078f465-f97d-47ff-ba44-81c357d485bd",
+    "familyId": "3b8c1f70-e2c6-4a36-b6cb-1cf45c398eae",
+    "clientId": "studio-site",
+    "targetSceneRole": "hero-centerpiece",
+    "state": "draft"
+  },
+  "352af481-4346-4c51-9322-35abc494370d": {
+    "workflowId": "352af481-4346-4c51-9322-35abc494370d",
+    "assetId": "ae603e89-5964-4082-a83f-49b29f991f74",
+    "familyId": "62bd8736-3c05-49c1-9fcc-c6eac0105e76",
+    "clientId": "studio-site",
+    "targetSceneRole": "hero-centerpiece",
+    "state": "draft"
   }
 }

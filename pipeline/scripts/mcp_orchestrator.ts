@@ -99,6 +99,10 @@ export class BlenderOrchestrator {
     private async generateFallbackGLB(request: LogoGenerationRequest, outputPath: string, publicUrl: string): Promise<string> {
         console.log(`[MCP] 🔧 Generating fallback GLB for: ${request.targetFilename}`);
 
+        if (request.inputType === 'svg') {
+            console.warn(`[MCP] ⚠️ SVG input ignored — Blender is unavailable. The fallback generator cannot parse SVG curves; producing a generic colored box instead. Install Blender for real SVG→3D conversion.`);
+        }
+
         // Parse brand color or use default
         const hex = request.brandColorHex || '#8B5CF6';
         const r = parseInt(hex.slice(1, 3), 16) / 255;
