@@ -11,7 +11,7 @@ export function useTemplateConfig() {
     const resolveWebGLConfig = (globalTheme: any, sectionData: NormalizedSection) => {
         // 1. Fallbacks if CMS omitted data
         const isHero = sectionData.type === 'hero';
-        const defaultMode = isHero ? 'ambient-particles' : 'none';
+        const defaultMode = isHero ? 'ambient' : 'none';
 
         // 2. WIRING POINT 2: Select the sceneMode and apply physical/lighting overrides
         return {

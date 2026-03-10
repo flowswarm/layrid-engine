@@ -8,10 +8,18 @@ import { MotionEngine } from './MotionEngine';
  * 
  * CODEX §Rule 8 COMPLIANCE: Does NOT own a persistent RAF loop.
  * Uses a single throttled RAF call for resize debouncing only.
+ * 
+ * Degraded mode detection (Codex §10):
+ *   - Mobile breakpoint (<768px)
+ *   - prefers-reduced-motion: reduce
+ *   - navigator.deviceMemory < 4
+ *   - navigator.hardwareConcurrency < 4
  */
 export class ViewportController {
     private boundOnResize: () => void;
     private resizeTimeout: number | null = null;
+    private reducedMotionQuery: MediaQueryList | null = null;
+    private boundMotionChange: ((e: MediaQueryListEvent) => void) | null = null;
 
     constructor() {
         this.boundOnResize = this.onThrottledResize.bind(this);
@@ -19,6 +27,12 @@ export class ViewportController {
 
     public initialize() {
         window.addEventListener('resize', this.boundOnResize, { passive: true });
+
+        // Listen for reduced-motion preference changes at runtime
+        this.reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+        this.boundMotionChange = () => this.evaluateDeviceLimits();
+        this.reducedMotionQuery.addEventListener('change', this.boundMotionChange);
+
         // Measure constraints on first load
         this.evaluateDeviceLimits();
     }
@@ -41,9 +55,14 @@ export class ViewportController {
             breakpoint = 'tablet';
         }
 
-        // PERFORMANCE DOCTRINE:
-        // Force rendering subscribers to halt GPU work on low-power devices.
-        const degradedMode = breakpoint === 'mobile' || this.isBatterySaverMode();
+        // PERFORMANCE DOCTRINE — intentional degraded mode detection:
+        // Combine multiple signals to determine when the engine should
+        // simplify rendering for a stable, intentional experience.
+        const prefersReduced = this.reducedMotionQuery?.matches ?? false;
+        const lowMemory = 'deviceMemory' in navigator && (navigator as any).deviceMemory < 4;
+        const lowCores = 'hardwareConcurrency' in navigator && navigator.hardwareConcurrency < 4;
+
+        const degradedMode = breakpoint === 'mobile' || prefersReduced || lowMemory || lowCores;
 
         // Write the viewport state into MotionEngine — the sole runtime truth.
         MotionEngine.write({
@@ -56,15 +75,14 @@ export class ViewportController {
         });
     }
 
-    private isBatterySaverMode(): boolean {
-        return false;
-    }
-
     public dispose() {
         window.removeEventListener('resize', this.boundOnResize);
         if (this.resizeTimeout) {
             window.cancelAnimationFrame(this.resizeTimeout);
             this.resizeTimeout = null;
+        }
+        if (this.reducedMotionQuery && this.boundMotionChange) {
+            this.reducedMotionQuery.removeEventListener('change', this.boundMotionChange);
         }
     }
 }

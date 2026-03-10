@@ -80,6 +80,54 @@ export class AssetRegistry {
         );
     }
 
+    /**
+     * Returns assets awaiting approval for a given site and scene role.
+     * Used by AssetPipelineService to populate preview candidate lists.
+     */
+    public getPreviewCandidates(clientId: string, sceneRole: string = 'hero-centerpiece'): AssetRecord[] {
+        return Object.values(this.manifest.assetsRecords).filter(asset =>
+            asset.clientId === clientId &&
+            asset.status === 'pending_approval' &&
+            asset.compatibleSceneModes.includes(sceneRole)
+        );
+    }
+
+    /**
+     * Returns approved (active) assets for a given site and scene role.
+     * Used by AssetPipelineService for comparison candidate selection.
+     */
+    public getApprovedCandidates(clientId: string, sceneRole: string = 'hero-centerpiece'): AssetRecord[] {
+        return Object.values(this.manifest.assetsRecords).filter(asset =>
+            asset.clientId === clientId &&
+            asset.status === 'active' &&
+            asset.isHeroEligible &&
+            asset.compatibleSceneModes.includes(sceneRole)
+        );
+    }
+
+    /**
+     * Resolves the currently published live asset for a site + scene role.
+     * Bridges AssetRegistry → SiteDeploymentSync live mapping.
+     */
+    public getPublishedLiveAsset(clientId: string, sceneRole: string = 'hero-centerpiece'): AssetRecord | undefined {
+        // Find the family with a primary that is active and hero-eligible for this client
+        const familyIds = Object.keys(this.manifest.families).filter(
+            fid => this.manifest.families[fid].clientId === clientId
+        );
+
+        for (const fid of familyIds) {
+            const primaryId = this.manifest.families[fid].primaryAssetId;
+            if (primaryId) {
+                const asset = this.manifest.assetsRecords[primaryId];
+                if (asset && asset.status === 'active' && asset.isHeroEligible &&
+                    asset.compatibleSceneModes.includes(sceneRole)) {
+                    return asset;
+                }
+            }
+        }
+        return undefined;
+    }
+
     // ==========================================
     // UPDATE / MUTATION API (For the Admin UI & Job Runner)
     // ==========================================

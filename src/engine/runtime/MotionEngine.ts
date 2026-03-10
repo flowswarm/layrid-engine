@@ -17,6 +17,9 @@ type SubscriberCallback = (state: SharedRuntimeState) => void;
  * 
  * State shape matches the Canonical SharedRuntimeState exactly (codex §5).
  * No competing runtime shape is permitted.
+ * 
+ * @frozen — Public API is locked: read(), write(), writeQuiet(), subscribe().
+ * Do not add, remove, or rename public methods without a full convergence review.
  */
 class MotionEngineCore {
     public state: SharedRuntimeState = {
@@ -25,6 +28,7 @@ class MotionEngineCore {
             environment: 'live',
             mode: 'live',
             assetIds: [],
+            assetPaths: {},
             sceneRole: 'hero-centerpiece'
         },
         spatial: {
@@ -56,20 +60,41 @@ class MotionEngineCore {
     };
 
     private subscribers: Set<SubscriberCallback> = new Set();
-    private isRafting = false; // Prevents recursive stack overflows over RAF
+    private pendingNotify = false;
 
     public read(): SharedRuntimeState {
         return this.state;
     }
 
+    /**
+     * Write partial state updates and notify subscribers.
+     * 
+     * RULE 8 COMPLIANCE: No internal requestAnimationFrame.
+     * Notifications coalesce per-microtask to handle rapid external writes
+     * (UI clicks, TransitionEngine) without duplicate subscriber calls,
+     * while remaining synchronous within the same event loop tick as the
+     * MasterRAFLoop producer writes.
+     */
     public write(update: DeepPartial<SharedRuntimeState>): void {
         this.mergeDeep(this.state, update);
 
-        // Batch notifications perfectly until the browser is ready to paint
-        if (!this.isRafting) {
-            this.isRafting = true;
-            requestAnimationFrame(() => this.notify());
+        if (!this.pendingNotify) {
+            this.pendingNotify = true;
+            // Coalesce via microtask — fires in the same frame as the write,
+            // after all synchronous writes complete, but before the next paint.
+            // This is NOT a requestAnimationFrame — no extra frame delay.
+            queueMicrotask(() => this.flush());
         }
+    }
+
+    /**
+     * Write state without notifying subscribers.
+     * Used by subscribers (e.g. WebGLSceneManager) that need to publish data
+     * (topology anchors) back into shared state without causing infinite
+     * notification feedback loops.
+     */
+    public writeQuiet(update: DeepPartial<SharedRuntimeState>): void {
+        this.mergeDeep(this.state, update);
     }
 
     public subscribe(callback: SubscriberCallback): () => void {
@@ -80,8 +105,8 @@ class MotionEngineCore {
         return () => this.subscribers.delete(callback);
     }
 
-    private notify() {
-        this.isRafting = false;
+    private flush(): void {
+        this.pendingNotify = false;
         this.subscribers.forEach(cb => cb(this.state));
     }
 
@@ -101,3 +126,8 @@ class MotionEngineCore {
 
 // Expose the Singleton immediately enforcing the Canonical Single Source
 export const MotionEngine = new MotionEngineCore();
+
+// Expose on window for DevTools inspection (proof harness requirement)
+if (typeof window !== 'undefined') {
+    (window as any).MotionEngine = MotionEngine;
+}

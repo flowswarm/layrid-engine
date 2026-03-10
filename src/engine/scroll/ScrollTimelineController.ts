@@ -98,4 +98,11 @@ export class ScrollTimelineController {
             node.progress = Math.min(Math.max(progress, 0), 1);
         }
     }
+
+    /**
+     * Cleanup — clears all tracked nodes to prevent stale references.
+     */
+    public dispose() {
+        this.trackedNodes = [];
+    }
 }

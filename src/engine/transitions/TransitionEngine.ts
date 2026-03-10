@@ -4,6 +4,10 @@ import { MotionEngine } from '../runtime/MotionEngine';
  * PART 7: Transition Engine
  * A Producer strictly commanding the flow of cross-document continuity.
  * Mutates the `temporal` phase blocking underlying interactions until DOM resolves explicitly.
+ * 
+ * @exempt CODEX §Rule 8 — Uses requestAnimationFrame internally, but ONLY as a
+ * self-terminating Promise-based animation. Resolves when complete. Does NOT
+ * create a persistent loop and does NOT compete with MasterRAFLoop.
  */
 export class TransitionEngine {
 

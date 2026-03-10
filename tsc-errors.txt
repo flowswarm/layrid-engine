@@ -1,0 +1,106 @@
+﻿pipeline/deployment/deploymentExamples.ts(14,18): error TS2554: Expected 2 arguments, but got 1.
+pipeline/deployment/SiteDeploymentSync.ts(35,47): error TS2739: Type '{}' is missing the following properties from type 'Record<"preview" | "production" | "staging", { roles: Record<string, { deploymentId: string; activeAssetId: string; previousAssetId: string | null; publishedAt: Date; publishedBy: string; deploymentChecksum: string; scheduledFor?: Date | undefined; }>; }>': preview, production, staging
+pipeline/feedback/feedbackEngineWiring.ts(11,10): error TS2305: Module '"../jobs/LogoJobRunner"' has no exported member 'LogoJobRunner'.
+pipeline/feedback/feedbackEngineWiring.ts(11,25): error TS2305: Module '"../jobs/LogoJobRunner"' has no exported member 'LogoJobConfig'.
+pipeline/feedback/feedbackEngineWiring.ts(35,81): error TS2554: Expected 3 arguments, but got 4.
+pipeline/feedback/feedbackEngineWiring.ts(112,4): error TS2554: Expected 3 arguments, but got 4.
+pipeline/feedback/feedbackIntegrationExamples.ts(11,10): error TS2305: Module '"../jobs/LogoJobRunner"' has no exported member 'LogoJobRunner'.
+pipeline/feedback/feedbackIntegrationExamples.ts(36,94): error TS2353: Object literal may only specify known properties, and 'extrusionDepth' does not exist in type 'Partial<{ assetId: string; assetFamilyId: string; clientId: string; sourceType: "svg" | "text" | "png"; exportFilename: string; runtimePath: string; assetType: "centerpiece_mesh" | "environment_map" | "baked_texture"; ... 9 more ...; adminNotes?: string | undefined; }>'.
+pipeline/feedback/FeedbackManager.ts(3,10): error TS2305: Module '"../jobs/LogoJobRunner"' has no exported member 'LogoJobRunner'.
+pipeline/feedback/FeedbackManager.ts(3,25): error TS2305: Module '"../jobs/LogoJobRunner"' has no exported member 'LogoJobConfig'.
+pipeline/feedback/FeedbackManager.ts(82,43): error TS2339: Property 'extrusionDepth' does not exist on type '{ assetId: string; assetFamilyId: string; clientId: string; sourceType: "svg" | "text" | "png"; exportFilename: string; runtimePath: string; assetType: "centerpiece_mesh" | "environment_map" | "baked_texture"; ... 9 more ...; adminNotes?: string | undefined; }'.
+pipeline/feedback/FeedbackManager.ts(83,38): error TS2339: Property 'bevelSize' does not exist on type '{ assetId: string; assetFamilyId: string; clientId: string; sourceType: "svg" | "text" | "png"; exportFilename: string; runtimePath: string; assetType: "centerpiece_mesh" | "environment_map" | "baked_texture"; ... 9 more ...; adminNotes?: string | undefined; }'.
+pipeline/integration/registryWorkflowBinder.ts(9,31): error TS2307: Cannot find module './AssetRegistry' or its corresponding type declarations.
+pipeline/integration/registryWorkflowBinder.ts(14,31): error TS2554: Expected 2 arguments, but got 1.
+pipeline/integration/registryWorkflowBinder.ts(24,40): error TS2339: Property 'getLivePublishedAssetId' does not exist on type 'ApprovalWorkflowEngine'.
+pipeline/jobs/LogoJobRunner.ts(5,37): error TS2307: Cannot find module '../../scripts/mcp_orchestrator' or its corresponding type declarations.
+pipeline/operations/events.types.ts(120,25): error TS2554: Expected 2-3 arguments, but got 1.
+pipeline/operations/OperationsEventBus.ts(51,21): error TS2503: Cannot find namespace 'z'.
+pipeline/operations/OperationsEventBus.ts(60,18): error TS2503: Cannot find namespace 'z'.
+pipeline/operations/operationsEventWiring.ts(11,10): error TS2305: Module '"../jobs/LogoJobRunner"' has no exported member 'LogoJobRunner'.
+pipeline/operations/operationsEventWiring.ts(117,21): error TS2339: Property 'recordApproval' does not exist on type 'ClientApprovalManager'.
+pipeline/operations/operationsEventWiring.ts(136,20): error TS2339: Property 'rollbackAssetPublish' does not exist on type 'SiteDeploymentSync'.
+pipeline/operations/queueIntegrationExamples.ts(12,10): error TS2305: Module '"../jobs/LogoJobRunner"' has no exported member 'LogoJobRunner'.
+pipeline/operations/revisionQueueEngineWiring.ts(12,10): error TS2305: Module '"../jobs/LogoJobRunner"' has no exported member 'LogoJobRunner'.
+pipeline/operations/revisionQueueEngineWiring.ts(79,9): error TS2353: Object literal may only specify known properties, and 'thickness' does not exist in type 'Partial<{ assetId: string; assetFamilyId: string; clientId: string; sourceType: "svg" | "text" | "png"; exportFilename: string; runtimePath: string; assetType: "centerpiece_mesh" | "environment_map" | "baked_texture"; ... 9 more ...; adminNotes?: string | undefined; }>'.
+pipeline/operations/revisionQueueEngineWiring.ts(100,44): error TS2339: Property 'createApprovalSession' does not exist on type 'ClientApprovalManager'.
+pipeline/operations/revisionQueueEngineWiring.ts(116,21): error TS2339: Property 'recordApproval' does not exist on type 'ClientApprovalManager'.
+pipeline/operations/RevisionQueueManager.ts(9,10): error TS2305: Module '"../jobs/LogoJobRunner"' has no exported member 'LogoJobRunner'.
+pipeline/operations/RevisionQueueManager.ts(48,19): error TS2503: Cannot find namespace 'z'.
+pipeline/operations/RevisionQueueManager.ts(191,47): error TS2339: Property 'getTime' does not exist on type 'Date | "high" | "low" | "medium" | "urgent"'.
+  Property 'getTime' does not exist on type '"high"'.
+pipeline/operations/RevisionQueueManager.ts(191,76): error TS2339: Property 'getTime' does not exist on type 'Date | "high" | "low" | "medium" | "urgent"'.
+  Property 'getTime' does not exist on type '"high"'.
+pipeline/orchestrator/jobFlowExamples.ts(11,16): error TS2554: Expected 1 arguments, but got 0.
+pipeline/orchestrator/jobFlowExamples.ts(31,32): error TS2554: Expected 4 arguments, but got 2.
+pipeline/orchestrator/jobFlowExamples.ts(100,32): error TS2554: Expected 4 arguments, but got 2.
+pipeline/preview/clientApprovalEngineWiring.ts(75,45): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+  Type 'null' is not assignable to type 'string'.
+pipeline/preview/clientApprovalEngineWiring.ts(79,24): error TS18048: 'assetData' is possibly 'undefined'.
+pipeline/preview/clientApprovalEngineWiring.ts(80,32): error TS18048: 'assetData' is possibly 'undefined'.
+pipeline/preview/clientApprovalEngineWiring.ts(81,29): error TS18048: 'assetData' is possibly 'undefined'.
+pipeline/preview/comparisonEngineWiring.ts(68,45): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+  Type 'null' is not assignable to type 'string'.
+pipeline/preview/comparisonEngineWiring.ts(72,24): error TS18048: 'assetData' is possibly 'undefined'.
+pipeline/preview/comparisonEngineWiring.ts(73,32): error TS18048: 'assetData' is possibly 'undefined'.
+pipeline/preview/comparisonEngineWiring.ts(74,29): error TS18048: 'assetData' is possibly 'undefined'.
+pipeline/registry/systemBehavior.ts(30,5): error TS2552: Cannot find name 'asset'. Did you mean 'Set'?
+pipeline/registry/systemBehavior.ts(30,14): error TS2552: Cannot find name 'asset'. Did you mean 'Set'?
+pipeline/registry/systemBehavior.ts(30,43): error TS2552: Cannot find name 'asset'. Did you mean 'Set'?
+pipeline/registry/systemBehavior.ts(31,5): error TS1108: A 'return' statement can only be used within a function body.
+pipeline/registry/systemBehavior.ts(51,5): error TS2304: Cannot find name 'registry'.
+pipeline/security/permissions.types.ts(106,66): error TS2339: Property 'Values' does not exist on type 'ZodEnum<{ "comparison.session:create": "comparison.session:create"; "workflow.approval:approve": "workflow.approval:approve"; "site.deployment:publish": "site.deployment:publish"; "queue.revision:assign": "queue.revision:assign"; ... 13 more ...; "system.audit:view": "system.audit:view"; }>'.
+pipeline/workflow/engineResolutionBehavior.ts(22,5): error TS2304: Cannot find name 'flow'.
+pipeline/workflow/engineResolutionBehavior.ts(23,5): error TS1108: A 'return' statement can only be used within a function body.
+pipeline/workflow/runtimeResolutionRules.ts(21,45): error TS2339: Property 'getLivePublishedAsset' does not exist on type 'ApprovalWorkflowEngine'.
+pipeline/workflow/workflowExamples.ts(13,18): error TS2554: Expected 2 arguments, but got 1.
+src/admin/api/createJob.ts(4,55): error TS2307: Cannot find module 'h3' or its corresponding type declarations.
+src/admin/api/createJob.ts(5,41): error TS2307: Cannot find module '@/src/admin/schemas/adminRequest.schema' or its corresponding type declarations.
+src/admin/api/createJob.ts(6,39): error TS2307: Cannot find module '@/src/admin/normalizer' or its corresponding type declarations.
+src/admin/api/createJob.ts(7,36): error TS2307: Cannot find module '@/pipeline/jobs/LogoJobRunner' or its corresponding type declarations.
+src/admin/api/createJob.ts(11,42): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/admin/api/createJob.ts(14,57): error TS7006: Parameter 'body' implicitly has an 'any' type.
+src/admin/components/AssetRequestForm.vue(9,3): error TS2353: Object literal may only specify known properties, and 'targetExportName' does not exist in type 'Partial<{ brandName: string; exportFilename: string; sourceType: "svg_upload" | "png_upload" | "text_generated"; sourcePayload: string; geometryExtrusionDepth: number; geometryBevelDepth: number; ... 11 more ...; pipelineAdminNotes?: string | undefined; }>'.
+src/admin/components/AssetRequestForm.vue(56,11): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/admin/components/AssetRequestForm.vue(56,26): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/admin/components/AssetRequestForm.vue(82,30): error TS2339: Property 'targetExportName' does not exist on type '{ brandName?: string | undefined; exportFilename?: string | undefined; sourceType?: "svg_upload" | "png_upload" | "text_generated" | undefined; sourcePayload?: string | undefined; ... 13 more ...; pipelineAdminNotes?: string | undefined; }'.
+src/admin/components/AssetRequestForm.vue(97,30): error TS2339: Property 'sourceFileId' does not exist on type '{ brandName?: string | undefined; exportFilename?: string | undefined; sourceType?: "svg_upload" | "png_upload" | "text_generated" | undefined; sourcePayload?: string | undefined; ... 13 more ...; pipelineAdminNotes?: string | undefined; }'.
+src/admin/components/AssetRequestForm.vue(103,30): error TS2339: Property 'textContent' does not exist on type '{ brandName?: string | undefined; exportFilename?: string | undefined; sourceType?: "svg_upload" | "png_upload" | "text_generated" | undefined; sourcePayload?: string | undefined; ... 13 more ...; pipelineAdminNotes?: string | undefined; }'.
+src/admin/components/AssetRequestForm.vue(111,34): error TS2339: Property 'materialPreset' does not exist on type '{ brandName?: string | undefined; exportFilename?: string | undefined; sourceType?: "svg_upload" | "png_upload" | "text_generated" | undefined; sourcePayload?: string | undefined; ... 13 more ...; pipelineAdminNotes?: string | undefined; }'.
+src/admin/components/AssetRequestForm.vue(121,33): error TS2339: Property 'primaryColorHex' does not exist on type '{ brandName?: string | undefined; exportFilename?: string | undefined; sourceType?: "svg_upload" | "png_upload" | "text_generated" | undefined; sourcePayload?: string | undefined; ... 13 more ...; pipelineAdminNotes?: string | undefined; }'.
+src/admin/components/AssetRequestForm.vue(130,40): error TS2339: Property 'extrusionDepth' does not exist on type '{ brandName?: string | undefined; exportFilename?: string | undefined; sourceType?: "svg_upload" | "png_upload" | "text_generated" | undefined; sourcePayload?: string | undefined; ... 13 more ...; pipelineAdminNotes?: string | undefined; }'.
+src/admin/components/AssetRequestForm.vue(134,40): error TS2339: Property 'bevelAmount' does not exist on type '{ brandName?: string | undefined; exportFilename?: string | undefined; sourceType?: "svg_upload" | "png_upload" | "text_generated" | undefined; sourcePayload?: string | undefined; ... 13 more ...; pipelineAdminNotes?: string | undefined; }'.
+src/admin/components/AssetRequestForm.vue(141,34): error TS2339: Property 'isHeroUsage' does not exist on type '{ brandName?: string | undefined; exportFilename?: string | undefined; sourceType?: "svg_upload" | "png_upload" | "text_generated" | undefined; sourcePayload?: string | undefined; ... 13 more ...; pipelineAdminNotes?: string | undefined; }'.
+src/admin/components/AssetRequestForm.vue(145,34): error TS2339: Property 'allowAnchorPublishing' does not exist on type '{ brandName?: string | undefined; exportFilename?: string | undefined; sourceType?: "svg_upload" | "png_upload" | "text_generated" | undefined; sourcePayload?: string | undefined; ... 13 more ...; pipelineAdminNotes?: string | undefined; }'.
+src/admin/components/widgets/NotificationWidget.vue(62,27): error TS2339: Property 'hasCapability' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.
+src/admin/documentation/requestFlowExamples.ts(9,39): error TS2307: Cannot find module '../../pipeline/schemas/generation.types' or its corresponding type declarations.
+src/admin/normalizer.ts(1,35): error TS2307: Cannot find module '../schemas/adminRequest.schema' or its corresponding type declarations.
+src/admin/pages/analytics/GlobalPerformanceDashboard.vue(120,26): error TS2339: Property 'hasCapability' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.
+src/admin/pages/analytics/GlobalPerformanceDashboard.vue(120,71): error TS2339: Property 'hasCapability' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.
+src/admin/pages/analytics/GlobalPerformanceDashboard.vue(121,27): error TS2339: Property 'hasCapability' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.
+src/admin/pages/analytics/GlobalPerformanceDashboard.vue(121,72): error TS2339: Property 'hasCapability' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.
+src/admin/pages/analytics/GlobalPerformanceDashboard.vue(122,33): error TS2339: Property 'hasCapability' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.
+src/admin/pages/analytics/GlobalPerformanceDashboard.vue(122,78): error TS2339: Property 'hasCapability' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.
+src/admin/pages/analytics/GlobalPerformanceDashboard.vue(128,5): error TS2322: Type '"all"' is not assignable to type '"imported-logo" | "text-generated" | undefined'.
+src/admin/pages/analytics/GlobalPerformanceDashboard.vue(188,9): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/admin/pages/deployments/ApprovalPublishingView.vue(83,25): error TS2339: Property 'hasCapability' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.
+src/admin/pages/deployments/ApprovalPublishingView.vue(86,25): error TS2339: Property 'hasCapability' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.
+src/admin/pages/deployments/DeploymentTargetDetail.vue(171,25): error TS2339: Property 'hasCapability' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.
+src/admin/pages/deployments/DeploymentTargetDetail.vue(172,25): error TS2339: Property 'hasRole' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.
+src/admin/pages/deployments/DeploymentTargetDetail.vue(227,46): error TS2551: Property 'userId' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'. Did you mean 'user'?
+src/admin/pages/jobs/JobExecutionDetail.vue(152,24): error TS2339: Property 'hasCapability' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.
+src/admin/pages/jobs/JobExecutionDetail.vue(153,26): error TS2339: Property 'hasCapability' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.
+src/admin/pages/jobs/JobOperationsDashboard.vue(128,46): error TS2339: Property 'hasCapability' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.
+src/admin/pages/library/AssetBrowserList.vue(78,10): error TS2724: '"../../architecture/AssetLibraryRoutes"' has no exported member named 'AssetBrowserFilterState'. Did you mean 'AssetFilterState'?
+src/admin/pages/library/AssetVariantDetail.vue(130,25): error TS2339: Property 'hasCapability' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.
+src/admin/pages/library/AssetVariantDetail.vue(131,25): error TS2339: Property 'hasCapability' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.
+src/admin/pages/library/AssetVariantDetail.vue(132,25): error TS2339: Property 'hasCapability' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.
+src/admin/pages/library/FamilyDetailView.vue(103,31): error TS2339: Property 'hasCapability' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.
+src/admin/pages/library/FamilyDetailView.vue(125,13): error TS2741: Property 'updatedAt' is missing in type '{ assetId: string; familyId: string; status: "published"; materialPreset: "chrome"; sourceType: "imported-logo"; createdBy: string; createdAt: string; }' but required in type '{ assetId: string; familyId: string; status: "generating" | "archived" | "failed" | "reviewing" | "approved" | "published" | "rejected"; materialPreset: "custom" | "chrome" | "glass" | "matte"; ... 9 more ...; updatedAt: string; }'.
+src/admin/pages/library/FamilyDetailView.vue(127,13): error TS2741: Property 'updatedAt' is missing in type '{ assetId: string; familyId: string; status: "reviewing"; materialPreset: "matte"; sourceType: "imported-logo"; queueItemId: string; createdBy: string; createdAt: string; }' but required in type '{ assetId: string; familyId: string; status: "generating" | "archived" | "failed" | "reviewing" | "approved" | "published" | "rejected"; materialPreset: "custom" | "chrome" | "glass" | "matte"; ... 9 more ...; updatedAt: string; }'.
+src/admin/pages/library/FamilyDetailView.vue(128,13): error TS2741: Property 'updatedAt' is missing in type '{ assetId: string; familyId: string; status: "rejected"; materialPreset: "glass"; sourceType: "text-generated"; createdBy: string; createdAt: string; }' but required in type '{ assetId: string; familyId: string; status: "generating" | "archived" | "failed" | "reviewing" | "approved" | "published" | "rejected"; materialPreset: "custom" | "chrome" | "glass" | "matte"; ... 9 more ...; updatedAt: string; }'.
+src/admin/pages/queue/QueueDetail.vue(102,38): error TS2307: Cannot find module '../../api/queueApi' or its corresponding type declarations.
+src/admin/pages/queue/QueueDetail.vue(103,37): error TS2307: Cannot find module '../../api/feedbackApi' or its corresponding type declarations.
+src/admin/pages/queue/QueueDetail.vue(119,43): error TS2339: Property 'hasCapability' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.
+src/admin/pages/queue/QueueDetail.vue(120,28): error TS2339: Property 'hasCapability' does not exist on type 'Store<"adminSession", { user: AdminUser; }, {}, { hasRoleAny(roles?: string[] | undefined): boolean; }>'.

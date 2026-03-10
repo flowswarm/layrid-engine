@@ -21,7 +21,7 @@ export function useContentNormalizer() {
                 // WIRING POINT 1: Set the centerpieceSource based on CMS data!
                 // We know the Blender MCP pipeline always exports to /models/{slug}-centerpiece.glb
                 webgl: {
-                    sceneMode: rawCmsData.hero.use3DLogo ? 'logo-centerpiece' : 'ambient-particles',
+                    sceneMode: rawCmsData.hero.use3DLogo ? 'logo-centerpiece' : 'ambient',
                     centerpieceSource: rawCmsData.hero.use3DLogo
                         ? `/models/${rawCmsData.brandSlug}-centerpiece.glb`
                         : undefined,

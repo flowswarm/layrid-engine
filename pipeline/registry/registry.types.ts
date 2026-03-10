@@ -44,8 +44,12 @@ export const AssetRecordSchema = z.object({
     assetFamilyId: z.string().uuid(), // The relational bond tying variants together
     clientId: z.string().min(1, 'Client/Site ID is required'),
 
+    // --- SCENE BINDING ---
+    sceneRole: z.string().default('hero-centerpiece').describe('The runtime scene role this asset fulfills'),
+
     // --- PROVENANCE ---
     sourceJobId: z.string().uuid().optional(), // Nullable if manually imported
+    sourceRequestId: z.string().uuid().optional().describe('Original admin request that triggered generation'),
     sourceType: SourceTypeEnum.describe('How this asset was originally created'),
 
     // --- RUNTIME RESOLUTION ---

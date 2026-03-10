@@ -9,7 +9,17 @@ const routes: RouteRecordRaw[] = [
     {
         path: '/engine-proof',
         name: 'engine-proof',
-        component: () => import('./engine/components/EngineProof.vue'),
+        component: () => import('./pages/EngineProof.vue'),
+    },
+    {
+        path: '/pipeline-proof',
+        name: 'pipeline-proof',
+        component: () => import('./pages/PipelineProof.vue'),
+    },
+    {
+        path: '/studio',
+        name: 'studio',
+        component: () => import('./pages/LayridStudio.vue'),
     }
 ];
 

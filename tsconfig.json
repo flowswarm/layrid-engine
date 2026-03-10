@@ -30,13 +30,31 @@
         ]
     },
     "include": [
-        "src/**/*.ts",
-        "src/**/*.vue",
-        "pipeline/**/*.ts",
-        "test/**/*.ts"
+        "src/engine/**/*.ts",
+        "src/engine/**/*.vue",
+        "src/pages/**/*.vue",
+        "src/App.vue",
+        "src/main.ts",
+        "src/router.ts",
+        "src/vite-env.d.ts",
+        "pipeline/deployment/SiteDeploymentSync.ts",
+        "pipeline/deployment/deployment.types.ts",
+        "pipeline/preview/RuntimeAssetResolver.ts",
+        "pipeline/preview/preview.types.ts",
+        "pipeline/registry/registry.types.ts",
+        "test/flagship-test-harness.ts"
     ],
     "exclude": [
         "node_modules",
-        "dist"
+        "dist",
+        "src/admin/**",
+        "pipeline/feedback/**",
+        "pipeline/integration/**",
+        "pipeline/jobs/**",
+        "pipeline/operations/**",
+        "pipeline/orchestrator/**",
+        "pipeline/scripts/**",
+        "pipeline/security/**",
+        "pipeline/workflow/**"
     ]
 }

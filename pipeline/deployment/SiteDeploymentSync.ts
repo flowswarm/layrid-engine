@@ -32,7 +32,7 @@ export class SiteDeploymentSync {
 
         // 1. Ensure Client & Environment tree exists
         if (!this.manifest.sites[clientId]) {
-            this.manifest.sites[clientId] = { environments: {} };
+            this.manifest.sites[clientId] = { environments: {} as Record<DeploymentEnvironment, { roles: Record<string, PublishedRouteSlot> }> };
         }
         const site = this.manifest.sites[clientId];
         if (!site.environments[environment]) {
@@ -114,6 +114,6 @@ export class SiteDeploymentSync {
 
     private generateChecksum(assetId: string, env: string) {
         // Generates a mock eTag that CDN hooks use to clear web cache
-        return Buffer.from(`${assetId}-${env}-${Date.now()}`).toString('base64').substring(0, 8);
+        return btoa(`${assetId}-${env}-${Date.now()}`).substring(0, 8);
     }
 }

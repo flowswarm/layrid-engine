@@ -65,6 +65,7 @@ export class RuntimeBootstrap {
                 siteId,
                 sceneRole: 'hero-centerpiece',
                 assetIds: resolved.assetIds,
+                assetPaths: {},
                 environment: resolved.environment as 'live' | 'preview' | 'comparison',
                 mode: resolved.mode as 'live' | 'preview' | 'comparison'
             },
@@ -115,6 +116,7 @@ export class RuntimeBootstrap {
         this.masterLoop?.dispose();
         this.heroFollower?.dispose();
         this.webglManager?.dispose();
+        this.scrollTimeline?.dispose();
         this.scrollController?.dispose();
         this.viewportController?.dispose();
 

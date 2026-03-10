@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { AssetJob, JobStatus } from '../schemas/job.types';
 import { LogoGenerationRequest } from '../schemas/generation.types';
 import { AssetRegistry } from '../registry/AssetRegistry';
-import { BlenderOrchestrator } from '../../scripts/mcp_orchestrator';
+import { BlenderOrchestrator } from '../scripts/mcp_orchestrator';
 
 export class LogoAssetJobRunner {
     private jobDb: Map<string, AssetJob> = new Map();
@@ -24,7 +24,9 @@ export class LogoAssetJobRunner {
         pipelinePayload: LogoGenerationRequest,
         integrationPreferences: AssetJob['integrationMetadata'],
         clientId: string,
-        familyId: string // The admin explicitly tells us which Family this job belongs to
+        familyId: string, // The admin explicitly tells us which Family this job belongs to
+        siteId: string,
+        sceneRole: string = 'hero-centerpiece'
     ): Promise<{ jobId: string, draftAssetId: string }> {
 
         const jobId = uuidv4();
@@ -36,7 +38,10 @@ export class LogoAssetJobRunner {
             materialPreset: pipelinePayload.materialPreset,
             compatibleSceneModes: [integrationPreferences?.heroSceneModePreference || 'logo-centerpiece'],
             isHeroEligible: true,
-            supportsMotionAnchors: integrationPreferences?.enableMotionAnchors ?? true
+            supportsMotionAnchors: integrationPreferences?.enableMotionAnchors ?? true,
+            // Provenance: bind to source job, site, and scene role
+            sourceJobId: jobId,
+            sceneRole
         });
 
         const newJob: AssetJob = {

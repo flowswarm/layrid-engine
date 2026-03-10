@@ -204,24 +204,3 @@ export class TemplateConfigController {
 function clamp(value: number, min: number, max: number): number {
     return Math.min(Math.max(value, min), max);
 }
-
-// ==========================================
-// LEGACY FUNCTION API (backward compatible)
-// ==========================================
-
-const controller = new TemplateConfigController();
-
-/**
- * @deprecated Use TemplateConfigController.resolve() directly
- */
-export function resolveWebGLSceneConfig(normalizedSectionData: any) {
-    const config = controller.resolve({ normalizedSectionData });
-    return {
-        mountComponent: config.scene.mountComponent,
-        ambientLightIntensity: config.scene.ambientLightIntensity,
-        environmentMap: config.scene.environmentMap,
-        sourceMeshUrl: config.scene.sourceMeshUrl,
-        broadcastAnchors: config.scene.broadcastAnchors,
-        previewState: config.previewState
-    };
-}

@@ -33,11 +33,10 @@ export class LayeredMediaScene {
 
     private onEngineTicked(state: MotionEngineState) {
         // 1. PERFORMANCE DOCTRINE: Check global environment capabilities FIRST
-        // Deep stacking depth composition destroys inferior hardware GPUs.
         if (state.viewport.degradedMode) {
             this.activePlanes.forEach(plane => {
                 plane.element.style.transform = 'translate3d(0,0,0)';
-                plane.element.style.filter = 'none'; // Clear arbitrary depth-of-field overhead
+                plane.element.style.opacity = '1';
             });
             return;
         }
@@ -46,17 +45,17 @@ export class LayeredMediaScene {
         const p = state.spatial.smoothedProgress;
         const v = state.spatial.velocity;
 
-        // 3. Execution Binding
+        // 3. Execution Binding — transform + opacity only (GPU-composited, no paint)
         this.activePlanes.forEach(plane => {
             // Translate the unified scalar onto a strict Y-Axis Depth track
             const shiftY = (p * -120) * plane.depthOffset;
             plane.element.style.transform = `translate3d(0, ${shiftY}px, 0)`;
 
-            // Velocity-driven Crossfade / Overlap Simulation
-            // Simulates physical "Depth of Field" organically by intensely blurring backing planes
-            // natively when throwing the scroll wheel hard.
-            const simulatedDoF = Math.abs(v * 35 * plane.depthOffset);
-            plane.element.style.filter = `blur(${Math.min(simulatedDoF, 10)}px)`;
+            // PERFORMANCE DOCTRINE: Velocity-driven depth simulation via opacity.
+            // Previous: filter:blur() — triggers paint per-frame on every plane.
+            // Current: opacity fade — fully GPU-composited, zero layout thrashing.
+            const velocityFade = 1 - Math.min(Math.abs(v * 8 * plane.depthOffset), 0.4);
+            plane.element.style.opacity = `${velocityFade}`;
         });
     }
 

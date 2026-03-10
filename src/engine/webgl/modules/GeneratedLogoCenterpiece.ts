@@ -1,32 +1,26 @@
-/**
- * src/engine/webgl/modules/GeneratedLogoCenterpiece.ts
- * 
- * The canonical centerpiece scene module for the Layrid flagship slice.
- * Loads a GLB asset when available, or creates a procedural demo mesh.
- * Always exposes TextAnchorSocket for 3D→2D projection.
- * Provides proper GPU resource cleanup.
- * 
- * WebGL acts as a pure renderer — it receives an asset URL and renders it.
- * It does NOT know whether the URL came from live, preview, or comparison.
- */
-
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 
+// ─── Shared loader singleton (Rule 8: efficient resource usage) ──────────────
+// All GeneratedLogoCenterpiece instances share one GLTFLoader/DRACOLoader pair,
+// avoiding duplicate DRACO decoder initialization and memory overhead.
+const sharedDracoLoader = new DRACOLoader();
+sharedDracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.4.3/');
+
+const sharedGLTFLoader = new GLTFLoader();
+sharedGLTFLoader.setDRACOLoader(sharedDracoLoader);
+
 export class GeneratedLogoCenterpiece {
     private meshGroup: THREE.Group = new THREE.Group();
     private anchorSocket: THREE.Object3D | null = null;
-    private loader: GLTFLoader;
     private isLoaded = false;
 
-    constructor() {
-        this.loader = new GLTFLoader();
+    // Cached emissive material references — avoids per-frame traverse()
+    private emissiveMaterials: THREE.MeshStandardMaterial[] = [];
 
-        // Set up DRACO decoder for compressed GLBs
-        const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.4.3/');
-        this.loader.setDRACOLoader(dracoLoader);
+    constructor() {
+        // No per-instance loader allocation needed — uses module-level shared loader
     }
 
     /**
@@ -36,7 +30,7 @@ export class GeneratedLogoCenterpiece {
      */
     public async load(url: string): Promise<void> {
         try {
-            const gltf = await this.loader.loadAsync(url);
+            const gltf = await sharedGLTFLoader.loadAsync(url);
             this.meshGroup.add(gltf.scene);
             this.isLoaded = true;
 
@@ -51,6 +45,9 @@ export class GeneratedLogoCenterpiece {
                 this.meshGroup.add(this.anchorSocket);
                 console.log('[GeneratedLogoCenterpiece] ⚠️ No TextAnchorSocket in GLB — injected at center');
             }
+
+            // Cache emissive-capable materials for efficient per-frame updates
+            this.cacheEmissiveMaterials();
 
             console.log(`[GeneratedLogoCenterpiece] ✅ Loaded centerpiece from: ${url}`);
         } catch {
@@ -103,6 +100,9 @@ export class GeneratedLogoCenterpiece {
         this.meshGroup.add(this.anchorSocket);
 
         this.isLoaded = true;
+
+        // Cache emissive-capable materials for efficient per-frame updates
+        this.cacheEmissiveMaterials();
     }
 
     /**
@@ -159,6 +159,32 @@ export class GeneratedLogoCenterpiece {
     }
 
     /**
+     * Returns cached emissive materials for efficient per-frame intensity updates.
+     * Avoids costly traverse() calls in WebGLSceneManager.
+     */
+    public getEmissiveMaterials(): THREE.MeshStandardMaterial[] {
+        return this.emissiveMaterials;
+    }
+
+    /**
+     * Walks the scene graph once to cache all MeshStandardMaterial refs
+     * that have emissive capability. Called after load/creation.
+     */
+    private cacheEmissiveMaterials(): void {
+        this.emissiveMaterials = [];
+        this.meshGroup.traverse((obj) => {
+            if (obj instanceof THREE.Mesh) {
+                const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+                for (const mat of mats) {
+                    if (mat instanceof THREE.MeshStandardMaterial && mat.emissiveIntensity !== undefined) {
+                        this.emissiveMaterials.push(mat);
+                    }
+                }
+            }
+        });
+    }
+
+    /**
      * Recursively find the TextAnchorSocket in the scene graph.
      */
     private findAnchorSocket(root: THREE.Object3D): THREE.Object3D | null {
@@ -193,15 +219,18 @@ export class GeneratedLogoCenterpiece {
 
         this.anchorSocket = null;
         this.isLoaded = false;
+        this.emissiveMaterials = [];
         console.log('[GeneratedLogoCenterpiece] 🛑 Disposed');
     }
 
     private disposeMaterial(mat: THREE.Material): void {
-        if ('map' in mat && (mat as any).map) (mat as any).map.dispose();
-        if ('normalMap' in mat && (mat as any).normalMap) (mat as any).normalMap.dispose();
-        if ('roughnessMap' in mat && (mat as any).roughnessMap) (mat as any).roughnessMap.dispose();
-        if ('metalnessMap' in mat && (mat as any).metalnessMap) (mat as any).metalnessMap.dispose();
-        if ('emissiveMap' in mat && (mat as any).emissiveMap) (mat as any).emissiveMap.dispose();
+        // Dispose all possible texture maps to release GPU memory
+        const textureMaps = ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'emissiveMap', 'aoMap', 'lightMap'] as const;
+        for (const key of textureMaps) {
+            if (key in mat && (mat as any)[key]) {
+                (mat as any)[key].dispose();
+            }
+        }
         mat.dispose();
     }
 }

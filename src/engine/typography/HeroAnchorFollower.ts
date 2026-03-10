@@ -42,12 +42,18 @@ export class HeroAnchorFollower {
     }
 
     private onTick(state: MotionEngineState): void {
-        // Degraded mode: static centered positioning
+        // Degraded mode: fixed centered positioning — intentional, not disabled.
+        // Keeps the element in the fixed overlay layer (no layout shift).
         if (state.viewport.degradedMode) {
-            this.element.style.transform = 'none';
-            this.element.style.position = 'relative';
+            this.element.style.position = 'fixed';
+            this.element.style.transform = 'translate3d(50vw, 30vh, 0) translate(-50%, -50%)';
+            this.element.style.willChange = 'auto';
             return;
         }
+
+        // Ensure full-mode positioning is set
+        this.element.style.position = 'fixed';
+        this.element.style.willChange = 'transform';
 
         // Read the projected 3D anchor from MotionEngine topology
         const anchor = state.topology.anchors.headerFollow;
@@ -55,8 +61,10 @@ export class HeroAnchorFollower {
         if (!anchor) return;
 
         // Lerp for premium-feel follow (avoids jarring 1:1 tracking)
-        this.currentX += (anchor.x - this.currentX) * this.lerpFactor;
-        this.currentY += (anchor.y - this.currentY) * this.lerpFactor;
+        // Use a faster factor in degraded mode for snappier, less GPU-dependent follow
+        const factor = state.viewport.degradedMode ? 0.15 : this.lerpFactor;
+        this.currentX += (anchor.x - this.currentX) * factor;
+        this.currentY += (anchor.y - this.currentY) * factor;
 
         // Apply via transform only (Rule 8: no layout thrashing)
         this.element.style.transform = `translate3d(${this.currentX}px, ${this.currentY}px, 0)`;
