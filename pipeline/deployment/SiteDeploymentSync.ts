@@ -11,6 +11,8 @@ import {
  * Supports safe deployment targeting environments (Preview vs Production).
  * Enforces atomic swaps and instant rollback safety.
  */
+type PersistFn = (data: unknown) => void;
+
 export class SiteDeploymentSync {
 
     private manifest: SiteDeploymentManifest = {
@@ -18,6 +20,39 @@ export class SiteDeploymentSync {
         lastSyncedAt: new Date(),
         sites: {}
     };
+    private persistFn: PersistFn | null = null;
+
+    /** Attach a persistence callback. */
+    public setPersist(fn: PersistFn): void { this.persistFn = fn; }
+
+    public toJSON(): object { return JSON.parse(JSON.stringify(this.manifest)); }
+
+    public static fromJSON(data: any): SiteDeploymentSync {
+        const sync = new SiteDeploymentSync();
+        if (data && data.sites) {
+            // Revive dates in route slots
+            for (const siteId of Object.keys(data.sites)) {
+                const site = data.sites[siteId];
+                for (const env of Object.keys(site.environments || {})) {
+                    for (const role of Object.keys(site.environments[env]?.roles || {})) {
+                        const slot = site.environments[env].roles[role];
+                        if (slot.publishedAt) slot.publishedAt = new Date(slot.publishedAt);
+                        if (slot.scheduledFor) slot.scheduledFor = new Date(slot.scheduledFor);
+                    }
+                }
+            }
+            sync.manifest = {
+                version: data.version ?? 2,
+                lastSyncedAt: new Date(data.lastSyncedAt),
+                sites: data.sites
+            };
+        }
+        return sync;
+    }
+
+    private persist(): void {
+        if (this.persistFn) this.persistFn(this.toJSON());
+    }
 
     /**
      * ATOMIC PUBLISH: Updates the specific site -> environment -> role pointer.
@@ -61,6 +96,7 @@ export class SiteDeploymentSync {
         // 3. Commit Atomic Swap
         site.environments[environment].roles[targetSceneRole] = newSlot;
         this.manifest.lastSyncedAt = new Date();
+        this.persist();
 
         console.log(`[Deployment Sync] ⚡ LIVE PUSH -> Site: ${clientId} | Env: ${environment} | Role: ${targetSceneRole} | Asset: ${newAssetId}`);
     }
@@ -93,6 +129,7 @@ export class SiteDeploymentSync {
         // Commit atomic rollback
         this.manifest.sites[clientId].environments[environment].roles[targetSceneRole] = rollbackedSlot;
         this.manifest.lastSyncedAt = new Date();
+        this.persist();
 
         console.log(`[Deployment Sync] ⏪ ROLLBACK -> Site: ${clientId} | Env: ${environment} | Prev Asset Restored: ${roleSlot.previousAssetId}`);
     }

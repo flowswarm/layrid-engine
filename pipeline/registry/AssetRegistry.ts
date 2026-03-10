@@ -1,6 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { AssetRecord, AssetManifest, AssetStatus, AssetRecordSchema } from './registry.types';
 
+/** Optional persistence callback — injected by server, absent in browser */
+type PersistFn = (data: unknown) => void;
+
 /**
  * ASSET REGISTRY
  * 
@@ -9,6 +12,7 @@ import { AssetRecord, AssetManifest, AssetStatus, AssetRecordSchema } from './re
  */
 export class AssetRegistry {
     private manifest: AssetManifest;
+    private persistFn: PersistFn | null = null;
 
     constructor() {
         this.manifest = {
@@ -17,6 +21,40 @@ export class AssetRegistry {
             assetsRecords: {},
             families: {}
         };
+    }
+
+    /** Attach a persistence callback (called on every mutation). */
+    public setPersist(fn: PersistFn): void { this.persistFn = fn; }
+
+    /** Serialize the full manifest to a plain JSON-safe object. */
+    public toJSON(): object {
+        return JSON.parse(JSON.stringify(this.manifest));
+    }
+
+    /** Restore manifest from a previously serialized object. */
+    public static fromJSON(data: any): AssetRegistry {
+        const reg = new AssetRegistry();
+        if (data && data.assetsRecords) {
+            // Revive dates
+            for (const key of Object.keys(data.assetsRecords)) {
+                const rec = data.assetsRecords[key];
+                if (rec.createdAt) rec.createdAt = new Date(rec.createdAt);
+                if (rec.updatedAt) rec.updatedAt = new Date(rec.updatedAt);
+                if (rec.approvedAt) rec.approvedAt = new Date(rec.approvedAt);
+            }
+            reg.manifest = {
+                manifestVersion: data.manifestVersion ?? 2,
+                lastSynchronizedAt: new Date(data.lastSynchronizedAt),
+                assetsRecords: data.assetsRecords,
+                families: data.families ?? {}
+            };
+        }
+        return reg;
+    }
+
+    /** Get all assets (for API responses). */
+    public getAllAssets(): Record<string, AssetRecord> {
+        return this.manifest.assetsRecords;
     }
 
     // ==========================================
@@ -231,6 +269,8 @@ export class AssetRegistry {
 
     private touchManifest() {
         this.manifest.lastSynchronizedAt = new Date();
-        // E.g., Database.save(this.manifest)
+        if (this.persistFn) {
+            this.persistFn(this.toJSON());
+        }
     }
 }

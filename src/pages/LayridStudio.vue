@@ -322,6 +322,8 @@ interface StudioAsset {
   material: string;
   status: string;
   familyId: string;
+  runtimePath?: string;
+  workflowId?: string;
 }
 const assets = ref<StudioAsset[]>([]);
 
@@ -376,6 +378,9 @@ async function generateAsset() {
   const familyId = uuidv4();
 
   try {
+    log(`⏳ Submitting generation job...`);
+
+    // 1. Submit job to real backend
     const result = await PlatformServices.requestLogo(siteId, familyId, {
       inputType: genForm.sourceType,
       materialPreset: genForm.materialPreset,
@@ -386,22 +391,27 @@ async function generateAsset() {
       targetFilename: `${genForm.brandName.toLowerCase()}-${Date.now()}`
     });
 
-    // Register the GLB path (simulating Blender export)
-    PlatformServices.registry.registerExportedFile(
-      result.draftAssetId,
-      `/models/${genForm.brandName.toLowerCase()}-${Date.now()}.glb`,
-      `${genForm.brandName.toLowerCase()}.glb`
-    );
+    log(`📋 Job queued: ${shortId(result.jobId)}`);
 
-    assets.value.push({
-      id: result.draftAssetId,
-      name: genForm.brandName,
-      material: genForm.materialPreset,
-      status: 'draft',
-      familyId,
+    // 2. Poll backend for job completion
+    const finalStatus = await PlatformServices.waitForJob(result.jobId, (status) => {
+      log(`⏳ Job ${shortId(result.jobId)}: ${status}`);
     });
 
-    log(`✦ Generated: ${genForm.brandName} (${genForm.materialPreset})`);
+    if (finalStatus.status === 'completed') {
+      assets.value.push({
+        id: result.draftAssetId,
+        name: genForm.brandName,
+        material: genForm.materialPreset,
+        status: 'pending_approval',
+        familyId: result.familyId,
+        runtimePath: finalStatus.runtimePath,
+        workflowId: result.workflowId,
+      });
+      log(`✦ Generated: ${genForm.brandName} (${genForm.materialPreset}) → ${finalStatus.runtimePath}`);
+    } else {
+      log(`✗ Generation failed: ${finalStatus.error || 'Unknown error'}`);
+    }
   } catch (err: any) {
     log(`✗ Error: ${err.message}`);
   } finally {
@@ -410,20 +420,28 @@ async function generateAsset() {
 }
 
 function previewAsset(assetId: string) {
-  PlatformServices.enterPreview(assetId);
+  const asset = assets.value.find(a => a.id === assetId);
+  if (!asset?.runtimePath) { log(`⚠ No runtimePath for ${shortId(assetId)}`); return; }
+  PlatformServices.enterPreview(assetId, asset.runtimePath, siteId);
   previewingId.value = assetId;
-  log(`👁 Preview: ${shortId(assetId)}`);
+  log(`👁 Preview: ${shortId(assetId)} → ${asset.runtimePath}`);
 }
 
-function exitPreview() {
-  PlatformServices.exitToLive();
+async function exitPreview() {
+  await PlatformServices.exitToLive(siteId);
   previewingId.value = null;
   log('← Returned to live');
 }
 
 function startComparison() {
   if (!compareA.value || !compareB.value) return;
-  PlatformServices.enterComparison([compareA.value, compareB.value]);
+  const a = assets.value.find(x => x.id === compareA.value);
+  const b = assets.value.find(x => x.id === compareB.value);
+  if (!a?.runtimePath || !b?.runtimePath) { log('⚠ Both assets need runtimePath'); return; }
+  PlatformServices.enterComparison(
+    [{ id: a.id, runtimePath: a.runtimePath }, { id: b.id, runtimePath: b.runtimePath }],
+    siteId
+  );
   isComparing.value = true;
   activeCompareSlot.value = 'A';
   log(`⚖ Comparing: ${shortId(compareA.value)} vs ${shortId(compareB.value)}`);
@@ -437,49 +455,63 @@ function switchCompare(slot: 'A' | 'B') {
   });
 }
 
-function exitComparison() {
-  PlatformServices.exitToLive();
+async function exitComparison() {
+  await PlatformServices.exitToLive(siteId);
   isComparing.value = false;
   log('← Exited comparison');
 }
 
-function advanceWorkflow(assetId: string, step: string) {
+async function advanceWorkflow(assetId: string, step: string) {
   const asset = assets.value.find(a => a.id === assetId);
   if (!asset) return;
 
-  switch (step) {
-    case 'generate':
-      PlatformServices.markGenerated(assetId);
-      asset.status = 'generated';
-      log(`✓ ${shortId(assetId)} marked generated`);
-      break;
-    case 'review':
-      PlatformServices.submitForReview(assetId);
-      asset.status = 'review';
-      log(`📤 ${shortId(assetId)} submitted for review`);
-      break;
-    case 'approve':
-      PlatformServices.approveAsset(assetId);
-      asset.status = 'approved';
-      log(`✓ ${shortId(assetId)} approved`);
-      break;
+  try {
+    const result = await PlatformServices.advanceWorkflow(assetId, step);
+    asset.status = result.state || step;
+    log(`✓ ${shortId(assetId)} → ${result.state}`);
+  } catch (err: any) {
+    log(`✗ Workflow error: ${err.message}`);
   }
 }
 
-function publishAsset(assetId: string) {
-  PlatformServices.publishAsset(assetId, siteId);
-  const asset = assets.value.find(a => a.id === assetId);
-  if (asset) asset.status = 'published';
-  // Demote previous live
-  assets.value.forEach(a => { if (a.id !== assetId && a.status === 'published') a.status = 'approved'; });
-  liveAssetId.value = assetId;
-  log(`🚀 Published: ${shortId(assetId)} is now LIVE`);
+async function publishAsset(assetId: string) {
+  try {
+    const result = await PlatformServices.publishAsset(assetId, siteId);
+    const asset = assets.value.find(a => a.id === assetId);
+    if (asset) asset.status = 'published';
+    // Demote previous live
+    assets.value.forEach(a => { if (a.id !== assetId && a.status === 'published') a.status = 'approved'; });
+    liveAssetId.value = result.liveAssetId;
+    log(`🚀 Published: ${shortId(assetId)} is now LIVE`);
+  } catch (err: any) {
+    log(`✗ Publish error: ${err.message}`);
+  }
 }
 
 // ─── Lifecycle ──────────────────────────────────────────
-onMounted(() => {
-  PlatformServices.bootLive(siteId);
-  log('Studio initialized');
+onMounted(async () => {
+  // Boot live from persisted server state
+  await PlatformServices.bootLive(siteId);
+
+  // Fetch persisted assets from server
+  const serverAssets = await PlatformServices.fetchAssets(siteId);
+  for (const a of serverAssets) {
+    assets.value.push({
+      id: a.id,
+      name: a.name,
+      material: a.material,
+      status: a.status,
+      familyId: a.familyId,
+      runtimePath: a.runtimePath,
+      workflowId: a.workflowId,
+    });
+  }
+
+  // Check live asset from server
+  const liveInfo = await PlatformServices.getLiveAsset(siteId);
+  if (liveInfo.liveAssetId) liveAssetId.value = liveInfo.liveAssetId;
+
+  log(`Studio initialized (${serverAssets.length} assets loaded)`);
 
   unsub = MotionEngine.subscribe((state) => {
     runtimeMode.value = state.context.mode;

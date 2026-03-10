@@ -32,6 +32,7 @@
     "include": [
         "src/engine/**/*.ts",
         "src/engine/**/*.vue",
+        "src/platform/**/*.ts",
         "src/pages/**/*.vue",
         "src/App.vue",
         "src/main.ts",

@@ -1,0 +1,104 @@
+{
+  "manifestVersion": 2,
+  "lastSynchronizedAt": "2026-03-10T04:31:46.206Z",
+  "assetsRecords": {
+    "89c95f81-69d5-4e27-aef3-834d8be2d8a0": {
+      "sourceType": "text",
+      "materialPreset": "chrome",
+      "compatibleSceneModes": [
+        "logo-centerpiece"
+      ],
+      "isHeroEligible": true,
+      "supportsMotionAnchors": true,
+      "sourceJobId": "7a42517e-70d2-4bff-9c55-074e32d56978",
+      "sceneRole": "hero-centerpiece",
+      "assetId": "89c95f81-69d5-4e27-aef3-834d8be2d8a0",
+      "assetFamilyId": "test-family",
+      "clientId": "studio-site",
+      "status": "pending_approval",
+      "createdAt": "2026-03-10T04:11:56.249Z",
+      "updatedAt": "2026-03-10T04:11:56.278Z",
+      "runtimePath": "/models/test-logo.glb",
+      "exportFilename": "test-logo.glb"
+    },
+    "5e95c647-bf5c-4e03-a101-1c96c1f4bf31": {
+      "sourceType": "text",
+      "materialPreset": "chrome",
+      "compatibleSceneModes": [
+        "logo-centerpiece"
+      ],
+      "isHeroEligible": true,
+      "supportsMotionAnchors": true,
+      "sourceJobId": "0b7eab3a-bdf4-46da-98dd-99d02d84e2c8",
+      "sceneRole": "hero-centerpiece",
+      "assetId": "5e95c647-bf5c-4e03-a101-1c96c1f4bf31",
+      "assetFamilyId": "b846c9ef-5a20-406e-9950-2308006834ef",
+      "clientId": "studio-site",
+      "status": "pending_approval",
+      "createdAt": "2026-03-10T04:13:02.477Z",
+      "updatedAt": "2026-03-10T04:13:02.481Z",
+      "runtimePath": "/models/test-logo-2.glb",
+      "exportFilename": "test-logo-2.glb"
+    },
+    "3f019d6b-f600-4e6b-aaef-080742762755": {
+      "sourceType": "svg",
+      "materialPreset": "chrome",
+      "compatibleSceneModes": [
+        "logo-centerpiece"
+      ],
+      "isHeroEligible": true,
+      "supportsMotionAnchors": true,
+      "sourceJobId": "e590bc9c-9dfa-4c57-b62b-2fd6c04cbe20",
+      "sceneRole": "hero-centerpiece",
+      "assetId": "3f019d6b-f600-4e6b-aaef-080742762755",
+      "assetFamilyId": "c6e2ea44-35c1-43a5-a707-0383f00b46d0",
+      "clientId": "studio-site",
+      "status": "pending_approval",
+      "createdAt": "2026-03-10T04:31:02.591Z",
+      "updatedAt": "2026-03-10T04:31:02.684Z",
+      "runtimePath": "/models/layrid-1773117062552.glb",
+      "exportFilename": "layrid-1773117062552.glb"
+    },
+    "97bb8c6b-3a83-443b-a64c-f8dcca3c3db9": {
+      "sourceType": "svg",
+      "materialPreset": "brushed-metal",
+      "compatibleSceneModes": [
+        "logo-centerpiece"
+      ],
+      "isHeroEligible": true,
+      "supportsMotionAnchors": true,
+      "sourceJobId": "8e428731-83e2-400e-99aa-0db45fe132fe",
+      "sceneRole": "hero-centerpiece",
+      "assetId": "97bb8c6b-3a83-443b-a64c-f8dcca3c3db9",
+      "assetFamilyId": "5fb3d61b-036b-4c7f-9c41-274d15df6823",
+      "clientId": "studio-site",
+      "status": "pending_approval",
+      "createdAt": "2026-03-10T04:31:46.198Z",
+      "updatedAt": "2026-03-10T04:31:46.206Z",
+      "runtimePath": "/models/layrid-1773117106194.glb",
+      "exportFilename": "layrid-1773117106194.glb"
+    }
+  },
+  "families": {
+    "test-family": {
+      "clientId": "studio-site",
+      "primaryAssetId": null,
+      "variantAssetIds": []
+    },
+    "b846c9ef-5a20-406e-9950-2308006834ef": {
+      "clientId": "studio-site",
+      "primaryAssetId": null,
+      "variantAssetIds": []
+    },
+    "c6e2ea44-35c1-43a5-a707-0383f00b46d0": {
+      "clientId": "studio-site",
+      "primaryAssetId": null,
+      "variantAssetIds": []
+    },
+    "5fb3d61b-036b-4c7f-9c41-274d15df6823": {
+      "clientId": "studio-site",
+      "primaryAssetId": null,
+      "variantAssetIds": []
+    }
+  }
+}

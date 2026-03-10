@@ -100,4 +100,9 @@ export class LogoAssetJobRunner {
         job.status = status;
         this.jobDb.set(job.jobId, job);
     }
+
+    /** Query a job's current status (for API polling). */
+    public getJob(jobId: string): AssetJob | undefined {
+        return this.jobDb.get(jobId);
+    }
 }

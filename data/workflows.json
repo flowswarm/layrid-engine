@@ -1,0 +1,34 @@
+{
+  "784bff2e-d3ee-48ca-a20d-b5bdba576f57": {
+    "workflowId": "784bff2e-d3ee-48ca-a20d-b5bdba576f57",
+    "assetId": "89c95f81-69d5-4e27-aef3-834d8be2d8a0",
+    "familyId": "test-family",
+    "clientId": "studio-site",
+    "targetSceneRole": "hero-centerpiece",
+    "state": "draft"
+  },
+  "59b7caab-013c-4c8a-ab24-4987e1c6134a": {
+    "workflowId": "59b7caab-013c-4c8a-ab24-4987e1c6134a",
+    "assetId": "5e95c647-bf5c-4e03-a101-1c96c1f4bf31",
+    "familyId": "b846c9ef-5a20-406e-9950-2308006834ef",
+    "clientId": "studio-site",
+    "targetSceneRole": "hero-centerpiece",
+    "state": "draft"
+  },
+  "eb518606-e672-483a-b20a-4fdfac005d06": {
+    "workflowId": "eb518606-e672-483a-b20a-4fdfac005d06",
+    "assetId": "3f019d6b-f600-4e6b-aaef-080742762755",
+    "familyId": "c6e2ea44-35c1-43a5-a707-0383f00b46d0",
+    "clientId": "studio-site",
+    "targetSceneRole": "hero-centerpiece",
+    "state": "draft"
+  },
+  "38c9863e-788a-4c80-9b97-4cff852b91c3": {
+    "workflowId": "38c9863e-788a-4c80-9b97-4cff852b91c3",
+    "assetId": "97bb8c6b-3a83-443b-a64c-f8dcca3c3db9",
+    "familyId": "5fb3d61b-036b-4c7f-9c41-274d15df6823",
+    "clientId": "studio-site",
+    "targetSceneRole": "hero-centerpiece",
+    "state": "draft"
+  }
+}

@@ -15,9 +15,12 @@ import {
  * The Workflow Engine manages the complex states, but delegates the 
  * final O(1) routing table to the SiteDeploymentSync.
  */
+type PersistFn = (data: unknown) => void;
+
 export class ApprovalWorkflowEngine {
     private registry: AssetRegistry;
     private deploymentSync: SiteDeploymentSync;
+    private persistFn: PersistFn | null = null;
 
     private workflowDB: Map<string, PublishingManifest> = new Map();
 
@@ -26,16 +29,50 @@ export class ApprovalWorkflowEngine {
         this.deploymentSync = deploymentSync;
     }
 
+    /** Attach a persistence callback. */
+    public setPersist(fn: PersistFn): void { this.persistFn = fn; }
+
+    public toJSON(): object {
+        const entries: Record<string, PublishingManifest> = {};
+        for (const [k, v] of this.workflowDB) entries[k] = v;
+        return entries;
+    }
+
+    public static fromJSON(data: any, registry: AssetRegistry, deploymentSync: SiteDeploymentSync): ApprovalWorkflowEngine {
+        const engine = new ApprovalWorkflowEngine(registry, deploymentSync);
+        if (data && typeof data === 'object') {
+            for (const [k, v] of Object.entries(data)) {
+                engine.workflowDB.set(k, v as PublishingManifest);
+            }
+        }
+        return engine;
+    }
+
+    private persist(): void {
+        if (this.persistFn) this.persistFn(this.toJSON());
+    }
+
+    /** Get a workflow by ID (for API queries). */
+    public getWorkflow(workflowId: string): PublishingManifest | undefined {
+        return this.workflowDB.get(workflowId);
+    }
+
+    /** Get all workflows (for API queries). */
+    public getAllWorkflows(): Map<string, PublishingManifest> {
+        return this.workflowDB;
+    }
+
     public initializeWorkflow(assetId: string, familyId: string, clientId: string, targetSceneRole: string = 'hero-centerpiece'): string {
         const workflowId = uuidv4();
         this.workflowDB.set(workflowId, { workflowId, assetId, familyId, clientId, targetSceneRole, state: 'draft' });
+        this.persist();
         return workflowId;
     }
 
-    public markGenerated(workflowId: string): void { this.transitionState(workflowId, 'draft', 'generated'); }
-    public submitForReview(workflowId: string, reviewerId: string): void { this.transitionState(workflowId, 'generated', 'review'); }
-    public rejectAsset(workflowId: string, reviewerId: string, reason: string): void { this.transitionState(workflowId, 'review', 'rejected'); }
-    public approveAsset(workflowId: string, reviewerId: string, notes?: string): void { this.transitionState(workflowId, 'review', 'approved'); }
+    public markGenerated(workflowId: string): void { this.transitionState(workflowId, 'draft', 'generated'); this.persist(); }
+    public submitForReview(workflowId: string, reviewerId: string): void { this.transitionState(workflowId, 'generated', 'review'); this.persist(); }
+    public rejectAsset(workflowId: string, reviewerId: string, reason: string): void { this.transitionState(workflowId, 'review', 'rejected'); this.persist(); }
+    public approveAsset(workflowId: string, reviewerId: string, notes?: string): void { this.transitionState(workflowId, 'review', 'approved'); this.persist(); }
 
     /** 
      * THE GATE: Promotes Workflow State AND triggers SiteDeploymentSync.
@@ -67,6 +104,7 @@ export class ApprovalWorkflowEngine {
             flow.assetId,
             publisherId
         );
+        this.persist();
     }
 
     /**
