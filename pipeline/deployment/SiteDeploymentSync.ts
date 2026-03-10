@@ -67,7 +67,7 @@ export class SiteDeploymentSync {
 
         // 1. Ensure Client & Environment tree exists
         if (!this.manifest.sites[clientId]) {
-            this.manifest.sites[clientId] = { environments: {} as Record<DeploymentEnvironment, { roles: Record<string, PublishedRouteSlot> }> };
+            this.manifest.sites[clientId] = { environments: { preview: { roles: {} }, production: { roles: {} }, staging: { roles: {} } } };
         }
         const site = this.manifest.sites[clientId];
         if (!site.environments[environment]) {

@@ -12,6 +12,11 @@ export const useAdminSession = defineStore('adminSession', {
             role: 'publisher' // Setting 'publisher' to let them view 'Deployments'
         } as AdminUser
     }),
+    getters: {
+        userId(): string {
+            return this.user.id;
+        }
+    },
     actions: {
         /**
          * Checks if the user has at least one of the required roles.
@@ -21,6 +26,13 @@ export const useAdminSession = defineStore('adminSession', {
             if (!roles || roles.length === 0) return true;
             if (this.user.role === 'admin') return true;
             return roles.includes(this.user.role);
+        },
+        hasRole(role: string): boolean {
+            return this.user.role === role || this.user.role === 'admin';
+        },
+        hasCapability(capability: string): boolean {
+            // Publishers and admins have all capabilities
+            return ['publisher', 'admin'].includes(this.user.role);
         }
     }
 });

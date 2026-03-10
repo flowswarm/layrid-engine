@@ -1,56 +1,16 @@
 {
-  "784bff2e-d3ee-48ca-a20d-b5bdba576f57": {
-    "workflowId": "784bff2e-d3ee-48ca-a20d-b5bdba576f57",
-    "assetId": "89c95f81-69d5-4e27-aef3-834d8be2d8a0",
-    "familyId": "test-family",
+  "f0c3ae76-2ef0-4cb4-8cc2-d42127416239": {
+    "workflowId": "f0c3ae76-2ef0-4cb4-8cc2-d42127416239",
+    "assetId": "2a1d3447-812f-462f-9780-7bc308917bd9",
+    "familyId": "d62404df-d9a7-4b0f-9f06-23ab3584964c",
     "clientId": "studio-site",
     "targetSceneRole": "hero-centerpiece",
     "state": "draft"
   },
-  "59b7caab-013c-4c8a-ab24-4987e1c6134a": {
-    "workflowId": "59b7caab-013c-4c8a-ab24-4987e1c6134a",
-    "assetId": "5e95c647-bf5c-4e03-a101-1c96c1f4bf31",
-    "familyId": "b846c9ef-5a20-406e-9950-2308006834ef",
-    "clientId": "studio-site",
-    "targetSceneRole": "hero-centerpiece",
-    "state": "draft"
-  },
-  "eb518606-e672-483a-b20a-4fdfac005d06": {
-    "workflowId": "eb518606-e672-483a-b20a-4fdfac005d06",
-    "assetId": "3f019d6b-f600-4e6b-aaef-080742762755",
-    "familyId": "c6e2ea44-35c1-43a5-a707-0383f00b46d0",
-    "clientId": "studio-site",
-    "targetSceneRole": "hero-centerpiece",
-    "state": "draft"
-  },
-  "38c9863e-788a-4c80-9b97-4cff852b91c3": {
-    "workflowId": "38c9863e-788a-4c80-9b97-4cff852b91c3",
-    "assetId": "97bb8c6b-3a83-443b-a64c-f8dcca3c3db9",
-    "familyId": "5fb3d61b-036b-4c7f-9c41-274d15df6823",
-    "clientId": "studio-site",
-    "targetSceneRole": "hero-centerpiece",
-    "state": "draft"
-  },
-  "66ad0a6a-bf25-4100-afc2-f6474a5d665f": {
-    "workflowId": "66ad0a6a-bf25-4100-afc2-f6474a5d665f",
-    "assetId": "413f59de-fc0e-4d0e-be16-69289c855110",
-    "familyId": "6491a95c-2c93-4d70-9915-48af23469f5f",
-    "clientId": "studio-site",
-    "targetSceneRole": "hero-centerpiece",
-    "state": "draft"
-  },
-  "73699377-5cfe-4594-9dd8-98ad71bddb84": {
-    "workflowId": "73699377-5cfe-4594-9dd8-98ad71bddb84",
-    "assetId": "6078f465-f97d-47ff-ba44-81c357d485bd",
-    "familyId": "3b8c1f70-e2c6-4a36-b6cb-1cf45c398eae",
-    "clientId": "studio-site",
-    "targetSceneRole": "hero-centerpiece",
-    "state": "draft"
-  },
-  "352af481-4346-4c51-9322-35abc494370d": {
-    "workflowId": "352af481-4346-4c51-9322-35abc494370d",
-    "assetId": "ae603e89-5964-4082-a83f-49b29f991f74",
-    "familyId": "62bd8736-3c05-49c1-9fcc-c6eac0105e76",
+  "4b6e1281-6877-4eee-8ef1-7f4a5c9e1dbd": {
+    "workflowId": "4b6e1281-6877-4eee-8ef1-7f4a5c9e1dbd",
+    "assetId": "eb627311-ce81-4edd-a5fd-5675cbcfcde2",
+    "familyId": "42fdcfe6-d9c6-4e6a-8de1-f76fb96306db",
     "clientId": "studio-site",
     "targetSceneRole": "hero-centerpiece",
     "state": "draft"

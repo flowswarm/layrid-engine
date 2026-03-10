@@ -103,7 +103,7 @@ const ProjectManagerCapabilities: PermissionCapability[] = [
     'queue.revision:trigger_job'
 ];
 
-const AdminCapabilities = Object.values(PermissionCapabilityEnum.Values) as PermissionCapability[];
+const AdminCapabilities = PermissionCapabilityEnum.options as unknown as PermissionCapability[];
 
 export const RolePermissionRegistry: Record<SystemRole, PermissionCapability[]> = {
     'observer': ObserverCapabilities,

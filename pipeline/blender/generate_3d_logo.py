@@ -17,13 +17,16 @@ def generate_svg_logo(svg_path):
     bpy.ops.import_curve.svg(filepath=svg_path)
     # SVGs import as a collection of curves. Join them.
     curves = [obj for obj in bpy.context.scene.objects if obj.type == 'CURVE']
+    if not curves:
+        raise ValueError(f"SVG '{svg_path}' contains no importable curve paths. "
+                         "Ensure the SVG has vector paths, not only raster images or text.")
     for curve in curves:
         curve.select_set(True)
     bpy.context.view_layer.objects.active = curves[0]
     
     if len(curves) > 1:
         bpy.ops.object.join()
-        
+    
     return bpy.context.active_object
 
 def generate_png_logo(png_path):
@@ -73,15 +76,35 @@ def assign_material(obj, preset, hex_color):
         bsdf.inputs['Metallic'].default_value = 0.0
         bsdf.inputs['Roughness'].default_value = 0.8
     elif preset == 'glass':
-        bsdf.inputs['Transmission'].default_value = 1.0
+        # Support both Blender 3.x ('Transmission') and 4.x ('Transmission Weight')
+        transmission_key = 'Transmission Weight' if 'Transmission Weight' in bsdf.inputs else 'Transmission'
+        bsdf.inputs[transmission_key].default_value = 1.0
         bsdf.inputs['Roughness'].default_value = 0.0
         bsdf.inputs['IOR'].default_value = 1.45
-        
+    elif preset == 'brushed-metal':
+        bsdf.inputs['Metallic'].default_value = 1.0
+        bsdf.inputs['Roughness'].default_value = 0.4
+        bsdf.inputs['Anisotropic'].default_value = 0.8
+    elif preset == 'emissive-neon':
+        bsdf.inputs['Metallic'].default_value = 0.0
+        bsdf.inputs['Roughness'].default_value = 0.0
+        bsdf.inputs['Emission Strength'].default_value = 3.0
+        # Emission color follows brand color — set below with base color
+    elif preset == 'flat-monochrome':
+        bsdf.inputs['Metallic'].default_value = 0.0
+        bsdf.inputs['Roughness'].default_value = 1.0
+        bsdf.inputs['Base Color'].default_value = (0.15, 0.15, 0.15, 1.0)
     if hex_color:
-        # Simplistic Hex to RGBA (Blender requires linear color space)
-        # Note: A real script needs proper sRGB to Linear conversion
-        # Example hardcoded fallback for demonstration
-        bsdf.inputs['Base Color'].default_value = (0.8, 0.1, 0.2, 1.0) 
+        hex_color = hex_color.lstrip('#')
+        r = int(hex_color[0:2], 16) / 255.0
+        g = int(hex_color[2:4], 16) / 255.0
+        b = int(hex_color[4:6], 16) / 255.0
+        # Convert sRGB to linear (Blender's color space)
+        def srgb_to_linear(c):
+            return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+        bsdf.inputs['Base Color'].default_value = (srgb_to_linear(r), srgb_to_linear(g), srgb_to_linear(b), 1.0)
+        if preset == 'emissive-neon':
+            bsdf.inputs['Emission Color'].default_value = (srgb_to_linear(r), srgb_to_linear(g), srgb_to_linear(b), 1.0)
 
     obj.data.materials.append(mat)
 
@@ -104,13 +127,18 @@ def add_anchor_socket(obj):
     print(f"[Anchor] TextAnchorSocket created at {anchor.location}")
 
 def export_glb(output_path):
+    # Select only what we want: HeroMesh + TextAnchorSocket
+    bpy.ops.object.select_all(action='DESELECT')
+    for obj in bpy.context.scene.objects:
+        if obj.name in ('HeroMesh', 'TextAnchorSocket'):
+            obj.select_set(True)
     bpy.ops.export_scene.gltf(
         filepath=output_path,
         export_format='GLB',
-        use_selection=False, # Export everything (mesh + anchor socket)
-        export_apply=True,   # Apply modifiers
+        use_selection=True,
+        export_apply=True,
         export_materials='EXPORT',
-        export_yup=True      # Three.js uses Y-Up
+        export_yup=True
     )
     print(f"Bake Complete: {output_path}")
 

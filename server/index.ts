@@ -1,3 +1,8 @@
+// ── Set Blender path before any imports reference it ──
+if (!process.env.BLENDER_PATH) {
+    process.env.BLENDER_PATH = 'C:\\Program Files\\Blender Foundation\\Blender 4.5\\blender.exe';
+}
+
 import express from 'express';
 import cors from 'cors';
 import path from 'path';

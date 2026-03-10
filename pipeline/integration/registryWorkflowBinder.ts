@@ -6,12 +6,14 @@
  * (review, approved, published) and explicitly assigns the 'Live' tags.
  */
 
-import { AssetRegistry } from './AssetRegistry';
+import { AssetRegistry } from '../registry/AssetRegistry';
 import { ApprovalWorkflowEngine } from '../workflow/ApprovalWorkflowEngine';
+import { SiteDeploymentSync } from '../deployment/SiteDeploymentSync';
 
 // Global singletons
 export const assetRegistry = new AssetRegistry();
-export const workflowEngine = new ApprovalWorkflowEngine(assetRegistry);
+const deploymentSync = new SiteDeploymentSync();
+export const workflowEngine = new ApprovalWorkflowEngine(assetRegistry, deploymentSync);
 
 
 /**
@@ -20,8 +22,8 @@ export const workflowEngine = new ApprovalWorkflowEngine(assetRegistry);
  * Art Director / Client "Published" gate.
  */
 export function getActivePublishedContext(clientId: string, sceneRole: string = 'hero-centerpiece') {
-    // 1. Ask Workflow Engine: "Who is legally allowed to be on screen right now?"
-    const liveAssetId = workflowEngine.getLivePublishedAssetId(clientId, sceneRole);
+    // 1. Ask Deployment Sync: "Who is legally allowed to be on screen right now?"
+    const liveAssetId = deploymentSync.resolveLiveAssetForSite(clientId, 'production', sceneRole);
 
     if (!liveAssetId) return null;
 

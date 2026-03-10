@@ -54,18 +54,28 @@ onMounted(async () => {
         activeAssetId.value = state.context.assetIds[0];
     });
 
-    // Initialize via RuntimeBootstrap — the single orchestrator
-    // In production, SiteDeploymentSync would connect to the deployment table.
-    // For the flagship demo, we create a minimal instance.
-    const deploymentSync = new SiteDeploymentSync();
-    bootstrap = new RuntimeBootstrap();
+    // Check if MotionEngine already has context (e.g., Studio's PlatformServices.bootLive()).
+    // If so, skip RuntimeBootstrap — it would overwrite context with an empty deployment table.
+    const existingState = MotionEngine.read();
+    const alreadyBooted = existingState.context.assetIds.length > 0
+        || existingState.context.mode !== 'live';
 
-    await bootstrap.initialize(
-        props.content.siteId || 'demo-site',
-        deploymentSync,
-        canvasRef.value,
-        heroTextRef.value || undefined
-    );
+    if (!alreadyBooted) {
+        // Standalone site page: initialize via RuntimeBootstrap with local deployment sync
+        const deploymentSync = new SiteDeploymentSync();
+        bootstrap = new RuntimeBootstrap();
+
+        await bootstrap.initialize(
+            props.content.siteId || 'demo-site',
+            deploymentSync,
+            canvasRef.value,
+            heroTextRef.value || undefined
+        );
+    } else {
+        // Studio context: RuntimeBootstrap already configured by PlatformServices.
+        // Just initialize the WebGL scene manager for rendering.
+        console.log('[HeroCenterpiece] Skipping RuntimeBootstrap — context already set by Studio');
+    }
 });
 
 onUnmounted(() => {

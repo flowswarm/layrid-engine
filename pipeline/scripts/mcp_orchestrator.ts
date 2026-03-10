@@ -1,4 +1,4 @@
-import { exec, execSync } from 'child_process';
+import { execFile, execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -20,21 +20,22 @@ export class BlenderOrchestrator {
     private blenderAvailable: boolean | null = null;
 
     constructor(options: { blenderPath?: string, outputDir?: string } = {}) {
-        this.blenderPath = options.blenderPath || 'blender';
+        this.blenderPath = options.blenderPath || process.env.BLENDER_PATH || 'blender';
         this.scriptPath = path.resolve(__dirname, '../blender/generate_3d_logo.py');
         this.outputDir = options.outputDir || path.resolve(process.cwd(), 'public/models');
     }
 
-    /** Check if Blender is available on the system PATH. */
+    /** Check if Blender is available (system PATH or BLENDER_PATH env). */
     private checkBlenderAvailable(): boolean {
         if (this.blenderAvailable !== null) return this.blenderAvailable;
         try {
-            execSync(`${this.blenderPath} --version`, { stdio: 'pipe', timeout: 5000 });
+            execSync(`"${this.blenderPath}" --version`, { stdio: 'pipe', timeout: 10000 });
             this.blenderAvailable = true;
-            console.log('[MCP] ✅ Blender detected on system PATH');
+            console.log(`[MCP] ✅ Blender detected: ${this.blenderPath}`);
         } catch {
             this.blenderAvailable = false;
-            console.log('[MCP] ⚠️ Blender not found — will use fallback GLB generator');
+            console.log(`[MCP] ⚠️ Blender not found at "${this.blenderPath}" — will use fallback GLB generator`);
+            console.log(`[MCP]    Set BLENDER_PATH env variable to your blender.exe location`);
         }
         return this.blenderAvailable;
     }
@@ -68,6 +69,7 @@ export class BlenderOrchestrator {
             '--source', request.sourcePayload,
             '--extrude', request.extrusionDepth.toString(),
             '--bevel', request.bevelDepth.toString(),
+            '--bevel-res', String(request.bevelResolution ?? 4),
             '--material', request.materialPreset,
             '--color', request.brandColorHex || '',
             '--output', outputPath
@@ -76,7 +78,7 @@ export class BlenderOrchestrator {
         return new Promise((resolve, reject) => {
             console.log(`[MCP] Orchestrating Blender for: ${request.targetFilename}`);
 
-            const proc = exec(`${this.blenderPath} ${args.join(' ')}`);
+            const proc = execFile(this.blenderPath, args);
 
             proc.stdout?.on('data', (data) => console.log(`[Blender]: ${data}`));
             proc.stderr?.on('data', (data) => console.error(`[Blender Error]: ${data}`));

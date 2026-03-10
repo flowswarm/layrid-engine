@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { ClientFeedback, ClientFeedbackSchema, StructuredAdjustments } from './feedback.types';
-import { LogoJobRunner, LogoJobConfig } from '../jobs/LogoJobRunner';
+import { LogoAssetJobRunner } from '../jobs/LogoJobRunner';
+import { LogoGenerationRequest } from '../schemas/generation.types';
 import { AssetRegistry } from '../registry/AssetRegistry';
 
 /**
@@ -10,11 +11,11 @@ import { AssetRegistry } from '../registry/AssetRegistry';
  * the results into literal Blender MCP target configs. 
  */
 export class FeedbackManager {
-    private jobRunner: LogoJobRunner;
+    private jobRunner: LogoAssetJobRunner;
     private registry: AssetRegistry;
     private activeFeedback: Map<string, ClientFeedback> = new Map();
 
-    constructor(jobRunner: LogoJobRunner, registry: AssetRegistry) {
+    constructor(jobRunner: LogoAssetJobRunner, registry: AssetRegistry) {
         this.jobRunner = jobRunner;
         this.registry = registry;
     }
@@ -70,17 +71,16 @@ export class FeedbackManager {
      * Pulls the exact properties from the currently viewed Asset, applies the 
      * semantic deltas (-1.0 to 1.0), and clamps the physical output perfectly.
      */
-    private generateRevisionPayload(feedback: ClientFeedback): LogoJobConfig {
+    private generateRevisionPayload(feedback: ClientFeedback): any {
         const baselineAsset = this.registry.getAssetById(feedback.context.assetId);
         if (!baselineAsset) throw new Error("Base asset no longer exists in Registry.");
 
-        // MOCK: in reality, fetch the true original `LogoJobConfig` from the DB using `baselineAsset.sourceJobId`
-        // We treat the current asset metadata as the working configuration bounds.
-        let baseConfig: LogoJobConfig = {
+        // Use defaults — AssetRecord doesn't store geometry params directly
+        let baseConfig: any = {
             materialPreset: baselineAsset.materialPreset as any || 'chrome',
             primaryColor: '#FFFFFF',
-            extrusionDepth: baselineAsset.extrusionDepth || 0.1,
-            bevelSize: baselineAsset.bevelSize || 0.02,
+            extrusionDepth: 0.15,
+            bevelSize: 0.03,
             complexity: 'high'
         };
 
@@ -102,7 +102,7 @@ export class FeedbackManager {
             // Bevel: 0.1 delta = tiny smoothing fraction
             if (adj.bevelDelta !== undefined) {
                 const variance = adj.bevelDelta * 0.05;
-                baseConfig.bevelSize = Math.max(0, Math.min(0.2, baseConfig.bevelSize + variance));
+                baseConfig.bevelSize = Math.max(0, Math.min(0.2, (baseConfig.bevelSize || 0.03) + variance));
             }
         }
 
@@ -112,7 +112,7 @@ export class FeedbackManager {
     /**
      * HANDOFF: Physically dispatch the revised Blender command
      */
-    public convertFeedbackToRevisionRequest(feedbackId: string, adminId: string): string {
+    public async convertFeedbackToRevisionRequest(feedbackId: string, adminId: string): Promise<string> {
         const feedback = this.activeFeedback.get(feedbackId);
         if (!feedback) throw new Error("Feedback not found.");
         if (['converted-to-revision', 'resolved', 'archived'].includes(feedback.status)) {
@@ -123,10 +123,22 @@ export class FeedbackManager {
         const jobConfig = this.generateRevisionPayload(feedback);
 
         // Engine Pipeline Integration
-        const jobId = this.jobRunner.queueGeneratedLogoJob(
+        const { jobId } = await this.jobRunner.queueJob(
+            {
+                inputType: 'text',
+                sourcePayload: 'REVISION',
+                extrusionDepth: jobConfig.extrusionDepth ?? 0.15,
+                bevelDepth: jobConfig.bevelSize ?? 0.03,
+                bevelResolution: 4,
+                materialPreset: jobConfig.materialPreset || 'chrome',
+                brandColorHex: jobConfig.primaryColor,
+                targetFilename: `revision-${Date.now()}`
+            },
+            { heroSceneModePreference: 'logo-centerpiece', enableMotionAnchors: true },
             feedback.context.siteId,
             feedback.context.variantFamilyId,
-            jobConfig
+            feedback.context.siteId,
+            feedback.context.sceneRole || 'hero-centerpiece'
         );
 
         // Secure Ledger Updates

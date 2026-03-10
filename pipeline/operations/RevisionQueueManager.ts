@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import {
     RevisionQueueItem,
@@ -6,7 +7,7 @@ import {
     DashboardQueryRules
 } from './queue.types';
 import { FeedbackManager } from '../feedback/FeedbackManager';
-import { LogoJobRunner } from '../jobs/LogoJobRunner';
+import { LogoAssetJobRunner } from '../jobs/LogoJobRunner';
 import { AssetRegistry } from '../registry/AssetRegistry';
 import { ApprovalWorkflowEngine } from '../workflow/ApprovalWorkflowEngine';
 
@@ -18,7 +19,7 @@ import { ApprovalWorkflowEngine } from '../workflow/ApprovalWorkflowEngine';
  */
 export class RevisionQueueManager {
     private feedbackManager: FeedbackManager;
-    private jobRunner: LogoJobRunner;
+    private jobRunner: LogoAssetJobRunner;
     private registry: AssetRegistry;
     private workflowEngine: ApprovalWorkflowEngine;
 
@@ -26,7 +27,7 @@ export class RevisionQueueManager {
 
     constructor(
         feedback: FeedbackManager,
-        jobs: LogoJobRunner,
+        jobs: LogoAssetJobRunner,
         registry: AssetRegistry,
         workflow: ApprovalWorkflowEngine
     ) {
@@ -87,7 +88,7 @@ export class RevisionQueueManager {
     /**
      * ADMIN ACTION: Triggers the physical Blender Render.
      */
-    public convertQueueItemToJob(itemId: string, adminId: string): string {
+    public async convertQueueItemToJob(itemId: string, adminId: string): Promise<string> {
         const item = this.queue.get(itemId);
         if (!item || !['new', 'needs-review', 'ready-for-conversion'].includes(item.status)) {
             throw new Error("Invalid ticket state for generating a Job.");
@@ -97,7 +98,7 @@ export class RevisionQueueManager {
         }
 
         // Fire the external physics via FeedbackManager
-        const jobId = this.feedbackManager.convertFeedbackToRevisionRequest(item.sourceFeedbackId, adminId);
+        const jobId = await this.feedbackManager.convertFeedbackToRevisionRequest(item.sourceFeedbackId, adminId);
 
         item.revisionRequestId = jobId;
         item.status = 'converted-to-job';
@@ -188,7 +189,12 @@ export class RevisionQueueManager {
             items = items.filter(i => rules.filterByPriority!.includes(i.priority));
         }
 
-        items.sort((a, b) => b[rules.sortBy]!.getTime() - a[rules.sortBy]!.getTime());
+        const sortField = rules.sortBy as 'createdAt' | 'updatedAt' | 'dueAt';
+        items.sort((a, b) => {
+            const aVal = a[sortField]; const bVal = b[sortField];
+            if (!aVal || !bVal) return 0;
+            return new Date(bVal as any).getTime() - new Date(aVal as any).getTime();
+        });
 
         return items;
     }

@@ -2,12 +2,22 @@ import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import multer from 'multer';
 import path from 'path';
+import { randomBytes } from 'crypto';
 import type { AssetRegistry } from '../../pipeline/registry/AssetRegistry';
 import type { LogoAssetJobRunner } from '../../pipeline/jobs/LogoJobRunner';
 import type { ApprovalWorkflowEngine } from '../../pipeline/workflow/ApprovalWorkflowEngine';
 
-// ── Multer config: save SVGs to public/uploads/ ───────────
-const upload = multer({ dest: path.resolve(process.cwd(), 'public/uploads/') });
+// ── Multer config: save SVGs to public/uploads/ with .svg extension ──
+// Blender's bpy.ops.import_curve.svg() requires the .svg extension to identify the file type.
+const upload = multer({
+    storage: multer.diskStorage({
+        destination: path.resolve(process.cwd(), 'public/uploads/'),
+        filename: (_req, file, cb) => {
+            const ext = path.extname(file.originalname) || '.svg';
+            cb(null, randomBytes(16).toString('hex') + ext);
+        }
+    })
+});
 
 /**
  * Logo Jobs API
